@@ -27,6 +27,7 @@ int main()
 {
     display_header();
     while (true) {
+        cout << "Enter a command: ";
         string command = get_command();
 
         if (!command.compare("clear")) {
@@ -52,7 +53,6 @@ void display_header() {
 
     cout << GREEN_TEXT << "Hello, Welcome to the CSOPESY command line!" << NORMAL_TEXT << endl;
     cout << LIGHT_YELLOW_TEXT << "Type 'exit' to quit, 'clear' to clear the screen" << NORMAL_TEXT << endl;
-    cout << "Enter a command: ";
 }
 
 string get_command() {
@@ -64,7 +64,8 @@ string get_command() {
         return command;
     }
     else {
-        cout << "X command not recognized." << endl;
+        cout << "Command not recognized." << endl;
+        return "";
     }
 
 }
