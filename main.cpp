@@ -60,7 +60,7 @@ string get_command() {
     getline(cin, command);
 
     if (is_valid_command(command)) {
-        cout << "X command recognized. Doing something." << endl;
+        cout << command << " command recognized. Doing something." << endl;
         return command;
     }
     else {
