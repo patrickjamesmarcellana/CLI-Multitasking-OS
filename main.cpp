@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <unordered_set>
+#include <string.h>
+#include <cstdlib>
 
 using namespace std;
 
@@ -8,6 +10,8 @@ using namespace std;
 constexpr auto GREEN_TEXT = "\x1b[38;5;40m";
 constexpr auto LIGHT_YELLOW_TEXT = "\x1b[38;5;229m";
 constexpr auto NORMAL_TEXT = "\x1b[0m";
+constexpr auto CLEAR_SCREEN = "\x1b[2J";
+constexpr auto MOVE_CURSOR_TO_HOME = "\x1b[H";
 
 unordered_set<string> COMMANDS_SET = {
     "initialize", "screen", "scheduler-test", "scheduler-stop", "report-util", "clear", "exit"
@@ -17,12 +21,19 @@ unordered_set<string> COMMANDS_SET = {
 void display_header();
 string get_command();
 bool is_valid_command(string);
+void clear_screen();
 
 int main()
 {
     display_header();
-    string command = get_command();
+    while (true) {
+        string command = get_command();
 
+        if (!command.compare("clear")) {
+            clear_screen();
+        }
+
+    }
 
 }
 
@@ -62,4 +73,9 @@ bool is_valid_command(string command) {
     else {
         return false;
     }
+}
+
+void clear_screen() {
+    cout << CLEAR_SCREEN << MOVE_CURSOR_TO_HOME;
+    display_header();
 }
