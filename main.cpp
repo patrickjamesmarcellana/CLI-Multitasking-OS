@@ -32,6 +32,9 @@ int main()
         if (!command.compare("clear")) {
             clear_screen();
         }
+        else if (!command.compare("exit")) {
+            exit(0);
+        }
 
     }
 
