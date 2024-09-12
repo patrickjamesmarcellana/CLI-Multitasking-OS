@@ -3,6 +3,8 @@
 #include <unordered_set>
 #include <string.h>
 #include <cstdlib>
+#include <algorithm>
+#include <cctype>
 
 using namespace std;
 
@@ -20,7 +22,7 @@ unordered_set<string> COMMANDS_SET = {
 // function prototypes
 void display_header();
 string get_command();
-bool is_valid_command(string);
+bool is_valid_command(string&);
 void clear_screen();
 
 int main()
@@ -36,9 +38,7 @@ int main()
         else if (!command.compare("exit")) {
             exit(0);
         }
-
     }
-
 }
 
 void display_header() {
@@ -70,7 +70,10 @@ string get_command() {
 
 }
 
-bool is_valid_command(string command) {
+bool is_valid_command(string& command) {
+    command.erase(remove_if(command.begin(), command.end(), ::isspace), command.end());
+    transform(command.begin(), command.end(), command.begin(), ::tolower);
+
     if (COMMANDS_SET.find(command) != COMMANDS_SET.end()) {
         return true;
     }
