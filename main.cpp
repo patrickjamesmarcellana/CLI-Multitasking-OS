@@ -81,5 +81,4 @@ bool is_valid_command(string command) {
 
 void clear_screen() {
     cout << CLEAR_SCREEN << MOVE_CURSOR_TO_HOME;
-    display_header();
 }
