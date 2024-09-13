@@ -2,6 +2,8 @@
 #include <functional>
 #include <map>
 #include <string>
+#include <sstream>
+#include <vector>
 
 // ANSI text colors
 constexpr auto GREEN_TEXT = "\033[38;5;40m";
@@ -56,14 +58,29 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
     };
 }
 
+namespace str_parsing_methods {
+    std::vector<std::string> split_string_by_space(std::string string) {
+        std::vector<std::string> tokens_list;
+        std::istringstream stream(string);
+        std::string token;
+        
+        while (stream >> token) {
+            tokens_list.push_back(token);
+        }
+
+        return tokens_list;
+    }
+}
+
 int main() {
     shell_commands::draw_header();
 
     while (true) {
         std::string command_string = shell_commands::get_command();
-        
-        // TODO: split the string and get the first word only (e.g. "screen -ls" -> "screen")
-        auto found_command = shell_commands::command_map.find(command_string); 
+        std::vector<std::string> command_tokens = str_parsing_methods::split_string_by_space(command_string);
+        std::string command_name = command_tokens[0];
+  
+        auto found_command = shell_commands::command_map.find(command_name); 
         if (found_command != shell_commands::command_map.end()) {
             found_command->second(command_string);
         } else {
