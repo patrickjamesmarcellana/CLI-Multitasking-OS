@@ -1,4 +1,7 @@
 #include <iostream>
+#include <functional>
+#include <map>
+#include <string>
 
 // ANSI text colors
 constexpr auto GREEN_TEXT = "\033[38;5;40m";
