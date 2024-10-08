@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 #include "Screen.h"
+#include "VirtualCPU.h"
 
 std::unordered_map<std::string, std::shared_ptr<Process>> processes;
 
@@ -97,14 +98,18 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"exit",  [](auto) { exit(0); }},
         {"initialize", stub},
         {"screen", route_screen_param},
-        {"scheduler-test", stub},
+        {"scheduler-test", [](auto) {
+            for(int i = 0; i < 5; i++) {
+                queue->push(std::make_shared<Process>(i, "test process #" + std::to_string(i), 5));
+            }
+        }},
         {"scheduler-stop", stub},
         {"report-util", stub},
     };
 }
 
 int main() {
-
+    VirtualCPU cpu0(0), cpu1(1), cpu2(2), cpu3(3);
     shell_commands::draw_header();
 
     while (true) {

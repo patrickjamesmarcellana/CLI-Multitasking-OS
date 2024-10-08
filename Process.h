@@ -23,4 +23,6 @@ public:
 	int getCurrLine();
 	int getTotalLines();
 	std::chrono::time_point<std::chrono::system_clock> getDateCreated();
+
+	void incCurrLine();
 };

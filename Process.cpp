@@ -4,7 +4,7 @@
 Process::Process(int id, String processName, int totalLines) :
 	id(id),
 	currLine(0),
-	totalLines(50),
+	totalLines(totalLines),
 	processName(processName),
 	dateCreated(std::chrono::system_clock::now())
 {
@@ -35,4 +35,11 @@ int Process::getTotalLines()
 SystemTime Process::getDateCreated()
 {
 	return this->dateCreated;
+}
+
+
+
+void Process::incCurrLine()
+{
+	this->currLine++;
 }
