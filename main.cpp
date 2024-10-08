@@ -110,13 +110,15 @@ int main() {
     while (true) {
         std::string command_string = shell_commands::get_command();
         std::vector<std::string> command_tokens = str_parsing_methods::split_string_by_space(command_string);
-        std::string command_name = command_tokens[0];
-  
-        auto found_command = shell_commands::command_map.find(command_name); 
-        if (found_command != shell_commands::command_map.end()) {
-            found_command->second(command_tokens);
-        } else {
-            std::cout << "Command not recognized.\n" << std::endl;
+        if(command_tokens.size() > 0) {
+            std::string command_name = command_tokens[0];
+    
+            auto found_command = shell_commands::command_map.find(command_name); 
+            if (found_command != shell_commands::command_map.end()) {
+                found_command->second(command_tokens);
+            } else {
+                std::cout << "Command not recognized.\n" << std::endl;
+            }
         }
     }
 }
