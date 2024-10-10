@@ -11,7 +11,7 @@ Process::Process(int id, String processName, int totalLines) :
 {
 	for(int commandCnt = 0; commandCnt < totalLines; commandCnt++)
 	{
-		this->commandList.push_back(std::make_shared<PrintCommand>("Hello world from " + this->processName, this->processName, this->arrivalTime));
+		this->commandList.push_back(std::make_shared<PrintCommand>("Hello world from " + this->processName, this->processName));
 	}
 }
 

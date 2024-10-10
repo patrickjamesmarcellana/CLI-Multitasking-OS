@@ -1,13 +1,12 @@
 #include "PrintCommand.h"
 
-PrintCommand::PrintCommand(std::string to_print, std::string process_name, SystemTime arrival_time) :
+PrintCommand::PrintCommand(std::string to_print, std::string process_name) :
 Command(Command::PRINT, process_name),
-to_print(to_print),
-arrival_time(arrival_time)
+to_print(to_print)
 {
 }
 
-void PrintCommand::execute(int core_id)
+void PrintCommand::execute(int core_id, SystemTime time_executed)
 {
     // create a file if it does not exist yet
     std::string filename = this->get_process_name() + ".txt";
@@ -26,6 +25,6 @@ void PrintCommand::execute(int core_id)
     std::ofstream appendfile(filename, std::ios::app);
     if (appendfile.good())
     {
-        appendfile << "(" << this->arrival_time << ")" << " Core:" << core_id << " \"" << to_print << "\"" << std::endl;
+        appendfile << "(" << time_executed << ")" << " Core:" << core_id << " \"" << to_print << "\"" << std::endl;
     }
 }

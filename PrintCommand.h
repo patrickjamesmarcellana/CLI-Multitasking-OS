@@ -14,8 +14,8 @@ private:
 	SystemTime arrival_time;
 
 public:
-	PrintCommand(std::string to_print, std::string process_name, SystemTime arrrival_time);
+	PrintCommand(std::string to_print, std::string process_name);
 	~PrintCommand() = default;
-	void execute(int core_id) override;
+	void execute(int core_id, SystemTime time_executed) override;
 };
 

@@ -92,7 +92,6 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
                 draw_header();
             }
         }
- 
     }
 
     const std::map<std::string, command_handler> command_map = {
