@@ -1,12 +1,14 @@
 #include "ProcessManager.h"
 
+#include <thread>
 #include <random>
 
-ProcessManager::ProcessManager(ProcessMap process_map, ProcessQueue process_queue, long long int min_ins, long long int max_ins) :
+ProcessManager::ProcessManager(ProcessMap process_map, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq) :
 process_map(process_map),
 process_queue(process_queue),
 min_ins(min_ins),
-max_ins(max_ins)
+max_ins(max_ins),
+batch_process_freq(batch_process_freq)
 {
 }
 
@@ -45,4 +47,17 @@ void ProcessManager::generate_processes(int count)
 	{
 		this->save_process("process_" + std::to_string(i));
 	}
+
+	// TODO: For MO1
+	//bool running = true;
+	//while(running)
+	//{
+	//	this->save_process("process_" + std::to_string(this->process_map.size()));
+	//}
+}
+
+void ProcessManager::scheduler_test_thread()
+{
+	std::thread generate_process_thread(&ProcessManager::generate_processes, this, 10);
+	generate_process_thread.detach();
 }

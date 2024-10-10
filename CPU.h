@@ -16,12 +16,15 @@ public:
         RR
     };
 
-    CPU(int id, Algorithm algorithm, ProcessQueue process_queue);
+    CPU(int id, Algorithm algorithm, ProcessQueue process_queue, long long int delay_per_exec);
+    bool get_is_busy();
 
 private:
     int id;
     Algorithm algorithm;
     ProcessPtr active_process;
     ProcessQueue process_queue;
+    long long int delay_per_exec;
     virtual void loop();
+    bool is_busy = false;
 };

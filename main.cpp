@@ -24,10 +24,10 @@ namespace os_config
     CPU::Algorithm scheduler = algorithm_map["fcfs"];
     // TODO: Change Process attributes to long long int as well
     long long int quantum_cycles;
-    long long int batch_process;
+    long long int batch_process_freq;
     long long int min_ins = 100;
 	long long int max_ins = 100;
-    long long int delays_per_exec;
+    long long int delays_per_exec = 2;
 
 
 }
@@ -36,7 +36,9 @@ namespace global_objects
 {
     std::unordered_map<std::string, std::shared_ptr<Process>> process_map;
     std::shared_ptr<ConcurrentPtrQueue<Process>> process_queue = std::make_shared<ConcurrentPtrQueue<Process>>();
-    ProcessManager process_manager = ProcessManager(process_map, process_queue, os_config::min_ins, os_config::max_ins);
+    ProcessManager process_manager = ProcessManager(process_map, process_queue, os_config::min_ins, os_config::max_ins, os_config::batch_process_freq);
+
+    Scheduler scheduler = Scheduler(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, os_config::delays_per_exec);
 }
 
 
@@ -118,6 +120,14 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
                 clear_screen();
                 draw_header();
             }
+        } else if (command_tokens[1] == "-ls")
+        {
+            std::cout << "CPU utilization: " << global_objects::scheduler.get_cpu_utilization() << "%" << std::endl;
+            std::cout << "Cores used: " << global_objects::scheduler.get_cores_used() << std::endl;
+            std::cout << "Cores available: " << global_objects::scheduler.get_cores_available() << std::endl;
+            std::cout << "\n" << "---------------------------------------------" << std::endl;
+            std::cout << "Running processes:" << std::endl;
+	        
         }
     }
 
@@ -134,8 +144,9 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
 
 int main() {
 
-    Scheduler scheduler = Scheduler(os_config::num_cpu, os_config::scheduler, global_objects::process_queue);
-    scheduler.runScheduler();
+    // TODO: MO1 -> Retrieve config file and assign os_config values
+
+	global_objects::scheduler.runScheduler();
     shell_commands::draw_header();
 
     while (true) {
