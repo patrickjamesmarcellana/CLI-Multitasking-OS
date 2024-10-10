@@ -17,7 +17,3 @@ Worker::~Worker() {
 void Worker::setup() {
 
 }
-
-void Worker::sleep(std::chrono::duration<int64_t> duration) {
-    std::this_thread::sleep_for(duration);
-}

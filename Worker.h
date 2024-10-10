@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <thread>
 
 class Worker {
     public:
@@ -12,6 +13,9 @@ class Worker {
         // loop function that inheriting class needs to implement
         virtual void loop() = 0;
 
-        void sleep(std::chrono::duration<int64_t>);
+        template<typename Rep, typename Period> void sleep(std::chrono::duration<Rep, Period> duration) {
+            std::this_thread::sleep_for(duration);
+        };
+
         bool enabled = true;
 };

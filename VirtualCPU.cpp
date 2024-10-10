@@ -20,4 +20,6 @@ void VirtualCPU::loop() {
         std::cout << "CPU " + std::to_string(id) + ": Hello world from " + active_process->getProcessName() + "\n";
         active_process->incCurrLine();
     }
+
+    sleep(1ms);
 }
