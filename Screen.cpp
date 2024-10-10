@@ -24,7 +24,7 @@ void Screen::displayProcessInfo()
 {
     std::cout << "Process: " << this->runningProcess->getProcessName() << std::endl;
     std::cout << "ID: " << this->runningProcess->getId() << std::endl;
-    auto local_time = std::chrono::current_zone()->to_local(this->runningProcess->getDateCreated());
+    auto local_time = std::chrono::current_zone()->to_local(this->runningProcess->getArrivalTime());
     std::cout << std::format("{:%m/%d/%Y %r}", round<std::chrono::seconds>(local_time)) << std::endl; // see fmt.dev for syntax
 
     std::cout << "\nCurrent instruction line: " << this->runningProcess->getCurrLine() << std::endl;

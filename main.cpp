@@ -5,6 +5,9 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
+
+#include "CPU.h"
+#include "Scheduler.h"
 #include "Screen.h"
 
 std::unordered_map<std::string, std::shared_ptr<Process>> processes;
@@ -97,7 +100,11 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"exit",  [](auto) { exit(0); }},
         {"initialize", stub},
         {"screen", route_screen_param},
-        {"scheduler-test", stub},
+		{"scheduler-test", [](auto) {
+			for (int i = 0; i < 5; i++) {
+		        queue->push(std::make_shared<Process>(i, "process_" + std::to_string(i), 5));
+		            }
+		    }},
         {"scheduler-stop", stub},
         {"report-util", stub},
     };
@@ -105,18 +112,23 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
 
 int main() {
 
+    Scheduler scheduler = Scheduler(4, CPU::FCFS);
+    scheduler.runScheduler();
     shell_commands::draw_header();
 
     while (true) {
         std::string command_string = shell_commands::get_command();
         std::vector<std::string> command_tokens = str_parsing_methods::split_string_by_space(command_string);
-        std::string command_name = command_tokens[0];
-  
-        auto found_command = shell_commands::command_map.find(command_name); 
-        if (found_command != shell_commands::command_map.end()) {
-            found_command->second(command_tokens);
-        } else {
-            std::cout << "Command not recognized.\n" << std::endl;
+        if (command_tokens.size() > 0) {
+            std::string command_name = command_tokens[0];
+
+            auto found_command = shell_commands::command_map.find(command_name);
+            if (found_command != shell_commands::command_map.end()) {
+                found_command->second(command_tokens);
+            }
+            else {
+                std::cout << "Command not recognized.\n" << std::endl;
+            }
         }
     }
 }
