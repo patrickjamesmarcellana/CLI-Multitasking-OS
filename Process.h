@@ -12,20 +12,19 @@ class Process
 private:
 	const int id;
 	String processName;
-	int currLine;
-	int totalLines;
+	long long int currLine;
+	long long int totalLines;
 	std::chrono::time_point<std::chrono::system_clock> arrivalTime;
-	int cpuCoreID = -1;
 	std::vector<std::shared_ptr<Command>> commandList;
 
 public:
-	Process(int id, String processName, int totalLines);
+	Process(int id, String processName, long long int totalLines);
 	~Process() = default;
 
 	int getId();
 	String getProcessName();
-	int getCurrLine();
-	int getTotalLines();
+	long long int getCurrLine();
+	long long int getTotalLines();
 	std::chrono::time_point<std::chrono::system_clock> getArrivalTime();
 	void incCurrLine();
 	std::vector<std::shared_ptr<Command>> getCommandList();

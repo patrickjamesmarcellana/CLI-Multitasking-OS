@@ -2,9 +2,9 @@
 
 #include "PrintCommand.h"
 
-Process::Process(int id, String processName, int totalLines) :
+Process::Process(int id, String processName, long long int totalLines) :
 	id(id),
-	currLine(0),
+	currLine(0LL),
 	totalLines(totalLines),
 	processName(processName),
 	arrivalTime(std::chrono::system_clock::now())
@@ -25,12 +25,12 @@ String Process::getProcessName()
 	return this->processName;
 }
 
-int Process::getCurrLine()
+long long int Process::getCurrLine()
 {
 	return this->currLine;
 }
 
-int Process::getTotalLines()
+long long int Process::getTotalLines()
 {
 	return this->totalLines;
 }
