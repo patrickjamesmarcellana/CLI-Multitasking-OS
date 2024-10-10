@@ -134,6 +134,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PrintCommand.cpp" />
     <ClCompile Include="Process.cpp" />
+    <ClCompile Include="ProcessManager.cpp" />
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Worker.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="CPU.h" />
     <ClInclude Include="PrintCommand.h" />
     <ClInclude Include="Process.h" />
+    <ClInclude Include="ProcessManager.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Worker.h" />

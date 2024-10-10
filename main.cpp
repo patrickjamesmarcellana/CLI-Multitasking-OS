@@ -7,10 +7,30 @@
 #include <vector>
 
 #include "CPU.h"
+#include "ProcessManager.h"
 #include "Scheduler.h"
 #include "Screen.h"
 
-std::unordered_map<std::string, std::shared_ptr<Process>> processes;
+namespace os_config
+{
+    // TODO: MO1 file config --> hardcoded for now
+    int num_cpu;
+    std::string scheduler;
+    // TODO: Change Process attributes to long long int as well
+    long long int quantum_cycles;
+    long long int batch_process;
+    long long int min_ins = 100;
+    long long int max_ins = 100;
+    long long int delays_per_exec;
+}
+
+namespace global_objects
+{
+    std::unordered_map<std::string, std::shared_ptr<Process>> process_map;
+    std::shared_ptr<ConcurrentPtrQueue<Process>> process_queue = std::make_shared<ConcurrentPtrQueue<Process>>();
+    ProcessManager process_manager = ProcessManager(process_map, process_queue, os_config::min_ins, os_config::max_ins);
+}
+
 
 namespace shell_commands {
     constexpr auto GREEN_TEXT = "\033[38;5;40m";
@@ -54,13 +74,13 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         return command_string;
     }
 
-    void route_screen_param(std::vector<String> command_tokens) {
+    void route_screen(std::vector<String> command_tokens) {
 
         if (command_tokens[1] == "-r") {
             String processName = command_tokens[2];
-            auto foundProcess = processes.find(processName);
+            auto foundProcess = global_objects::process_map.find(processName);
 
-            if (foundProcess != processes.end())
+            if (foundProcess != global_objects::process_map.end())
             {
                 clear_screen();
                 Screen screen = Screen(foundProcess->second);
@@ -74,9 +94,9 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         } else if (command_tokens[1] == "-s") {
             clear_screen();
             String processName = command_tokens[2];
-            auto foundProcess = processes.find(processName);
+            auto foundProcess = global_objects::process_map.find(processName);
 
-            if(foundProcess != processes.end())
+            if(foundProcess != global_objects::process_map.end())
             {
                 Screen screen = Screen(foundProcess->second);
                 screen.onEnabled();
@@ -84,9 +104,8 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
                 draw_header();
             } else
             {
-                std::shared_ptr<Process> newProcess = std::make_shared<Process>(processes.size(), processName, 50);
-                processes[processName] = newProcess;
-                Screen screen = Screen(newProcess);
+                std::shared_ptr<Process> new_process = global_objects::process_manager.save_process(processName);
+                Screen screen = Screen(new_process);
                 screen.onEnabled();
                 clear_screen();
                 draw_header();
@@ -98,7 +117,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"clear", [](auto) { clear_screen(); draw_header(); }},
         {"exit",  [](auto) { exit(0); }},
         {"initialize", stub},
-        {"screen", route_screen_param},
+        {"screen", route_screen},
 		{"scheduler-test", [](auto) {
 			for (int i = 0; i < 5; i++) {
 		        queue->push(std::make_shared<Process>(i, "process_" + std::to_string(i), 5));
