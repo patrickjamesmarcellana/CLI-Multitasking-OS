@@ -17,7 +17,7 @@ void VirtualCPU::loop() {
     }
 
     if(active_process && active_process->getCurrLine() < active_process->getTotalLines()) {
-        std::cout << "CPU " + std::to_string(id) + ": Hello world from " + active_process->getProcessName() << "\n";
+        std::cout << "CPU " + std::to_string(id) + ": Hello world from " + active_process->getProcessName() + "\n";
         active_process->incCurrLine();
     }
 }
