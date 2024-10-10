@@ -13,15 +13,23 @@
 
 namespace os_config
 {
+    std::unordered_map<std::string, CPU::Algorithm> algorithm_map = {
+        {"fcfs", CPU::FCFS},
+        {"rr", CPU::RR}
+    };
+
+
     // TODO: MO1 file config --> hardcoded for now
-    int num_cpu;
-    std::string scheduler;
+    int num_cpu = 4;
+    CPU::Algorithm scheduler = algorithm_map["fcfs"];
     // TODO: Change Process attributes to long long int as well
     long long int quantum_cycles;
     long long int batch_process;
     long long int min_ins = 100;
     long long int max_ins = 100;
     long long int delays_per_exec;
+
+
 }
 
 namespace global_objects
@@ -130,7 +138,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
 
 int main() {
 
-    Scheduler scheduler = Scheduler(4, CPU::FCFS);
+    Scheduler scheduler = Scheduler(os_config::num_cpu, os_config::scheduler);
     scheduler.runScheduler();
     shell_commands::draw_header();
 
