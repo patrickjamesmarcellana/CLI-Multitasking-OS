@@ -5,6 +5,7 @@
 
 #include "ConcurrentPtrQueue.h"
 #include "Process.h"
+#include "CPU.h"
 
 class ProcessManager
 {
@@ -19,6 +20,7 @@ public:
 	std::shared_ptr<Process> get_process(std::string process_name);
 	void add_process_to_queue(std::string process_name);
 	int generate_random_total_lines();
+	void generate_processes(int count);
 
 private:
 	ProcessMap process_map;

@@ -25,8 +25,8 @@ namespace os_config
     // TODO: Change Process attributes to long long int as well
     long long int quantum_cycles;
     long long int batch_process;
-    long long int min_ins = 100;
-    long long int max_ins = 100;
+    int min_ins = 100;
+	int max_ins = 100;
     long long int delays_per_exec;
 
 
@@ -126,11 +126,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"exit",  [](auto) { exit(0); }},
         {"initialize", stub},
         {"screen", route_screen},
-		{"scheduler-test", [](auto) {
-			for (int i = 0; i < 5; i++) {
-		        queue->push(std::make_shared<Process>(i, "process_" + std::to_string(i), 5));
-		            }
-		    }},
+        {"scheduler-test", [](auto) {global_objects::process_manager.generate_processes(10);}}, // TODO: Un-hardcode this number
         {"scheduler-stop", stub},
         {"report-util", stub},
     };
@@ -138,7 +134,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
 
 int main() {
 
-    Scheduler scheduler = Scheduler(os_config::num_cpu, os_config::scheduler);
+    Scheduler scheduler = Scheduler(os_config::num_cpu, os_config::scheduler, global_objects::process_queue);
     scheduler.runScheduler();
     shell_commands::draw_header();
 

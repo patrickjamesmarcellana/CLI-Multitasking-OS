@@ -14,5 +14,4 @@ public:
 	//virtual void process() = 0;
 
 	String name;
-	friend class ConsoleManager;
 };

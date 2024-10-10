@@ -15,6 +15,7 @@ std::shared_ptr<Process> ProcessManager::save_process(std::string process_name)
 	int total_lines = generate_random_total_lines();
 	std::shared_ptr<Process> new_process = std::make_shared<Process>(this->process_map.size(), process_name, total_lines);
 	this->process_map[process_name] = new_process;
+	this->process_queue->push(new_process);
 	return new_process;
 }
 
@@ -29,8 +30,6 @@ void ProcessManager::add_process_to_queue(std::string process_name)
 	this->process_queue->push(process);
 }
 
-
-
 int ProcessManager::generate_random_total_lines()
 {
 	std::random_device rand;
@@ -38,4 +37,12 @@ int ProcessManager::generate_random_total_lines()
 	std::uniform_int_distribution<> distr(this->min_ins, this->max_ins);
 
 	return distr(gen);
+}
+
+void ProcessManager::generate_processes(int count)
+{
+	for(int i = 0; i < count; i++)
+	{
+		this->save_process("process_" + std::to_string(i));
+	}
 }

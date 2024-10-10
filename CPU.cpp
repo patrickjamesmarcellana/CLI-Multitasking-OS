@@ -4,10 +4,8 @@
 #include "CPU.h"
 using namespace std::literals::chrono_literals;
 
-// TODO: not global
-std::shared_ptr<ConcurrentPtrQueue<Process>> queue = std::make_shared<ConcurrentPtrQueue<Process>>();
 
-CPU::CPU(int id, Algorithm algorithm) : Worker(), id(id), algorithm(algorithm) {
+CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue) : Worker(), id(id), algorithm(algorithm), process_queue(process_queue) {
 
 }
 
@@ -15,7 +13,7 @@ void CPU::loop() {
     if(algorithm == FCFS)
     {
         if (!active_process || active_process->getCurrLine() >= active_process->getTotalLines()) {
-            active_process = queue->try_pop();
+            active_process = this->process_queue->try_pop();
         }
 
         if (active_process && active_process->getCurrLine() < active_process->getTotalLines()) {
