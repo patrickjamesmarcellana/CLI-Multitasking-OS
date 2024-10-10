@@ -11,7 +11,6 @@ public:
     VirtualCPU(int id);
 private:
     int id;
-    bool enabled = true;
     //std::shared_ptr<ConcurrentPtrQueue<Process>> queue;
     ProcessPtr active_process;
 
