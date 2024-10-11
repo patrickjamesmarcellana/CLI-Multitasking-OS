@@ -1,0 +1,4 @@
+Process name: process_8
+Logs:
+
+(2024-10-11 14:25:56.4710127) Core:1 "Hello world from process_8"

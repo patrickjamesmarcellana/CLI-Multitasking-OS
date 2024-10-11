@@ -11,7 +11,7 @@ class CPU : Worker {
 public:
     typedef std::shared_ptr<Process> ProcessPtr;
     typedef std::shared_ptr<ConcurrentPtrQueue<Process>>& ProcessQueue;
-    typedef struct {
+    typedef struct cpu_stats_t {
         long long int active_counter = 0;
         long long int total_counter = 0;
         void increment_active() {
