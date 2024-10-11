@@ -1,4 +1,0 @@
-Process name: process_7
-Logs:
-
-(2024-10-11 14:25:45.5808253) Core:3 "Hello world from process_7"
