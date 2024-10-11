@@ -22,17 +22,21 @@ void CPU::loop() {
 
             if(active_process) // if CPU finally gets assigned a process
             {
-                this->process_cpu_counter = 0;
+                this->process_cpu_counter = 0LL;
+                this->active_process->set_assigned_core_id(this->id);
             }
         }
 
         if (active_process && active_process->getCurrLine() < active_process->getTotalLines()) {
             this->is_busy = true;
 
-            if(this->process_cpu_counter % delay_per_exec == 0)
+            if(this->process_cpu_counter % this->delay_per_exec == 0)
             {
+                this->process_cpu_counter = 0;
                 // get the command from the command list that is parallel to the current line of instruction, then execute it by passing the core ID
-                active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, std::chrono::system_clock::now());
+                SystemTime time_executed = std::chrono::system_clock::now();
+                active_process->set_time_executed(time_executed);
+                active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
             }
             
             active_process->incCurrLine();
@@ -42,9 +46,12 @@ void CPU::loop() {
                 this->is_busy = false;
             }
         }
+
+        sleep(100ms);
     } else if(algorithm == RR)
     {
 	    // TODO: MO1
+        // Note, when returning back to ready queue -> set core id of process to -1
     }
 
     this->inc_cpu_counter();

@@ -27,7 +27,7 @@ namespace os_config
     long long int batch_process_freq;
     long long int min_ins = 100;
 	long long int max_ins = 100;
-    long long int delays_per_exec = 2;
+    long long int delays_per_exec = 4294967296LL;
 
 
 }
@@ -127,7 +127,27 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
             std::cout << "Cores available: " << global_objects::scheduler.get_cores_available() << std::endl;
             std::cout << "\n" << "---------------------------------------------" << std::endl;
             std::cout << "Running processes:" << std::endl;
-	        
+            for(auto process : global_objects::process_map)
+            {
+	            if(!process.second->is_done_executing() && process.second->get_assigned_core_id() != -1)
+	            {
+                    std::cout << process.second->getProcessName() << "\t" << process.second->get_time_executed() << "\t"
+	            	<< "Core: " << process.second->get_assigned_core_id() << "\t" << process.second->getCurrLine() << " / "
+	            	<< process.second->getTotalLines() << std::endl;
+	            }
+            }
+
+            std::cout << "\nFinished processes:" << std::endl;
+            for (auto process : global_objects::process_map)
+            {
+                if (process.second->is_done_executing())
+                {
+                    std::cout << process.second->getProcessName() << "\t" << process.second->get_time_executed() << "\t"
+                        << "Finished" << "\t" << process.second->getCurrLine() << " / "
+                        << process.second->getTotalLines() << std::endl;
+                }
+            }
+            std::cout << std::endl;
         }
     }
 

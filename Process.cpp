@@ -49,3 +49,28 @@ std::vector<std::shared_ptr<Command>> Process::getCommandList()
 {
 	return this->commandList;
 }
+
+bool Process::is_done_executing()
+{
+	return this->currLine >= this->totalLines;
+}
+
+void Process::set_time_executed(SystemTime time_executed)
+{
+	this->time_executed = time_executed;
+}
+
+SystemTime Process::get_time_executed()
+{
+	return this->time_executed;
+}
+
+void Process::set_assigned_core_id(int core_id)
+{
+	this->assigned_core_id = core_id;
+}
+
+int Process::get_assigned_core_id()
+{
+	return this->assigned_core_id;
+}

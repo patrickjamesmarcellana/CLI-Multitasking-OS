@@ -14,8 +14,10 @@ private:
 	String processName;
 	long long int currLine;
 	long long int totalLines;
+	SystemTime time_executed;
 	std::chrono::time_point<std::chrono::system_clock> arrivalTime;
 	std::vector<std::shared_ptr<Command>> commandList;
+	int assigned_core_id = -1;
 
 public:
 	Process(int id, String processName, long long int totalLines);
@@ -28,4 +30,9 @@ public:
 	std::chrono::time_point<std::chrono::system_clock> getArrivalTime();
 	void incCurrLine();
 	std::vector<std::shared_ptr<Command>> getCommandList();
+	bool is_done_executing();
+	void set_time_executed(SystemTime time_executed);
+	SystemTime get_time_executed();
+	void set_assigned_core_id(int core_id);
+	int get_assigned_core_id();
 };

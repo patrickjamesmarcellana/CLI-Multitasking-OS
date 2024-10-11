@@ -28,5 +28,5 @@ private:
     long long int delay_per_exec;
     virtual void loop();
     bool is_busy = false;
-    int process_cpu_counter = 0;
+    long long int process_cpu_counter = 0;
 };
