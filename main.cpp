@@ -25,9 +25,9 @@ namespace os_config
     // TODO: Change Process attributes to long long int as well
     long long int quantum_cycles;
     long long int batch_process_freq;
-    long long int min_ins = 100;
-	long long int max_ins = 100;
-    long long int delays_per_exec = 4294967296LL;
+    long long int min_ins = 100LL;
+	long long int max_ins = 100LL;
+    long long int delays_per_exec = 100000LL;
 
 
 }

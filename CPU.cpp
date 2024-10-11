@@ -35,12 +35,12 @@ void CPU::loop() {
             {
                 this->process_cpu_counter = 0;
                 // get the command from the command list that is parallel to the current line of instruction, then execute it by passing the core ID
-                SystemTime time_executed = std::chrono::system_clock::now();
+                auto time_executed = std::chrono::system_clock::now();
                 active_process->set_time_executed(time_executed);
                 active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
+                active_process->incCurrLine();
             }
-            
-            active_process->incCurrLine();
+
             if(active_process->getCurrLine() > active_process->getTotalLines()) // check if incrementing curr line ends the process
             {
                 this->is_busy = false;
@@ -52,7 +52,7 @@ void CPU::loop() {
             }
         }
 
-        sleep(100ms);
+        //sleep(100ms);
     } else if(algorithm == RR)
     {
 	    // TODO: MO1

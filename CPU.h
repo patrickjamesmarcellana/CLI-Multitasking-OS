@@ -28,6 +28,7 @@ public:
     };
 
     CPU(int id, Algorithm algorithm, ProcessQueue process_queue, long long int delay_per_exec);
+    ~CPU() = default;
     bool get_is_busy();
     void inc_cpu_counter();
     void inc_cpu_active_counter();
