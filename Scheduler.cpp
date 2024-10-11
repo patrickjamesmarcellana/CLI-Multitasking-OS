@@ -44,5 +44,11 @@ int Scheduler::get_total_cores()
 
 int Scheduler::get_cpu_utilization()
 {
-	return this->get_cores_used() / this->num_cores * 100;
+	long long int active_cycles = 0, total_cycles = 0;
+	for(auto cpu : this->cpu_cores) {
+		auto stats = cpu->get_cpu_stats();
+		active_cycles += stats.active_counter;
+		total_cycles += stats.total_counter;
+	}
+ 	return active_cycles * 100 / total_cycles;
 }
