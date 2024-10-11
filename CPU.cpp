@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "CPU.h"
+#include <shared_mutex>
 using namespace std::literals::chrono_literals;
 
 
@@ -45,6 +46,11 @@ void CPU::loop() {
             {
                 this->is_busy = false;
             }
+
+            {
+                std::unique_lock lock(lock_cpu_stats);
+                cpu_stats.increment_active();
+            }
         }
 
         sleep(100ms);
@@ -54,6 +60,10 @@ void CPU::loop() {
         // Note, when returning back to ready queue -> set core id of process to -1
     }
 
+    {
+        std::unique_lock lock(lock_cpu_stats);
+        cpu_stats.increment_total();
+    }
     this->inc_cpu_counter();
 }
 
@@ -66,4 +76,9 @@ bool CPU::get_is_busy()
 void CPU::inc_cpu_counter()
 {
     this->process_cpu_counter++;
+}
+
+CPU::cpu_stats_t CPU::get_cpu_stats() {
+    std::shared_lock lock(lock_cpu_stats);
+    return this->cpu_stats;
 }
