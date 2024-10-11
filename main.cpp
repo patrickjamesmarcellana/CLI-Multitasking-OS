@@ -153,7 +153,6 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
 
     const std::map<std::string, command_handler> command_map = {
         {"clear", [](auto) { clear_screen(); draw_header(); }},
-        {"exit",  [](auto) { exit(0); }},
         {"initialize", stub},
         {"screen", route_screen},
         {"scheduler-test", [](auto) {global_objects::process_manager.generate_processes(10);}}, // TODO: Un-hardcode this number
@@ -171,6 +170,10 @@ int main() {
 
     while (true) {
         std::string command_string = shell_commands::get_command();
+        if(command_string == "exit") {
+            break;
+        }
+
         std::vector<std::string> command_tokens = str_parsing_methods::split_string_by_space(command_string);
         if (command_tokens.size() > 0) {
             std::string command_name = command_tokens[0];
@@ -184,4 +187,6 @@ int main() {
             }
         }
     }
+
+    global_objects::scheduler.stopScheduler();
 }

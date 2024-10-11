@@ -52,3 +52,7 @@ int Scheduler::get_cpu_utilization()
 	}
  	return active_cycles * 100 / total_cycles;
 }
+
+void Scheduler::stopScheduler() {
+	this->cpu_cores.clear();
+}

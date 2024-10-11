@@ -13,6 +13,7 @@ public:
 	~Scheduler() = default;
 
 	void runScheduler();
+	void stopScheduler();
 	int get_cores_used();
 	int get_cores_available();
 	int get_total_cores();
