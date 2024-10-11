@@ -18,18 +18,18 @@ void CPU::loop() {
     if(algorithm == FCFS)
     {
         if (!active_process || active_process->getCurrLine() >= active_process->getTotalLines()) {
+            this->is_busy = false;
             active_process = this->process_queue->try_pop();
 
             if(active_process) // if CPU finally gets assigned a process
             {
+                this->is_busy = true;
                 this->process_cpu_counter = 0LL;
                 this->active_process->set_assigned_core_id(this->id);
             }
         }
 
         if (active_process && active_process->getCurrLine() < active_process->getTotalLines()) {
-            this->is_busy = true;
-
             if(this->process_cpu_counter % this->delay_per_exec == 0)
             {
                 this->process_cpu_counter = 0;
@@ -40,7 +40,6 @@ void CPU::loop() {
             }
             
             active_process->incCurrLine();
-
             if(active_process->getCurrLine() > active_process->getTotalLines()) // check if incrementing curr line ends the process
             {
                 this->is_busy = false;

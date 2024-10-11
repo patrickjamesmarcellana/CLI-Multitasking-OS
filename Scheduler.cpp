@@ -21,9 +21,9 @@ void Scheduler::runScheduler()
 int Scheduler::get_cores_available()
 {
 	int cores_available = 0;
-	for(int core_id = 0; core_id < this->cpu_cores.size(); core_id++)
+	for(const auto& cpu : this->cpu_cores)
 	{
-		if(!this->cpu_cores[core_id]->get_is_busy())
+		if (!cpu->get_is_busy())
 		{
 			cores_available++;
 		}
