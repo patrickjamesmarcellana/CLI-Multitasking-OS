@@ -47,7 +47,7 @@ void CPU::loop() {
             }
 
             {
-                std::unique_lock lock(lock_cpu_stats);
+                std::unique_lock<std::shared_mutex> lock(lock_cpu_stats);
                 cpu_stats.increment_active();
             }
         }
@@ -60,7 +60,7 @@ void CPU::loop() {
     }
 
     {
-        std::unique_lock lock(lock_cpu_stats);
+        std::unique_lock<std::shared_mutex> lock(lock_cpu_stats);
         cpu_stats.increment_total();
     }
     this->inc_cpu_counter();

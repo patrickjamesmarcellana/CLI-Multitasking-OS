@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <semaphore>
 #include <thread>
 
 class Worker {
@@ -17,5 +18,6 @@ protected:
         std::this_thread::sleep_for(duration);
     };
 
+    std::binary_semaphore thread_semaphore{1};
     bool enabled = true;
 };
