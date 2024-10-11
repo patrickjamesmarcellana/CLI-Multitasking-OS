@@ -18,6 +18,7 @@ public:
 
     CPU(int id, Algorithm algorithm, ProcessQueue process_queue, long long int delay_per_exec);
     bool get_is_busy();
+    void inc_cpu_counter();
 
 private:
     int id;
@@ -27,4 +28,5 @@ private:
     long long int delay_per_exec;
     virtual void loop();
     bool is_busy = false;
+    int process_cpu_counter = 0;
 };
