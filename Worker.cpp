@@ -1,20 +1,15 @@
 #include "Worker.h"
 #include <thread>
 
-Worker::Worker() {
-    thread_semaphore.acquire();
-    std::thread cpuThread([this]() {
-        while (enabled) {
-            loop();
-        }
-        thread_semaphore.release();
-        });
-    cpuThread.detach();
+Worker::Worker() : worker_thread([this]() {
+    while (enabled) {
+        loop();
+    }}) {
 }
 
 Worker::~Worker() {
     enabled = false;
-    thread_semaphore.acquire(); // wait for thread to release semaphore
+    worker_thread.detach(); // wait for thread to exit
 }
 
 void Worker::setup() {

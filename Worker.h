@@ -18,6 +18,6 @@ protected:
         std::this_thread::sleep_for(duration);
     };
 
-    std::binary_semaphore thread_semaphore{1};
+    std::thread worker_thread;
     bool enabled = true;
 };
