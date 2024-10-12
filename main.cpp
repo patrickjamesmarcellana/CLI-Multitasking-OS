@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <functional>
 #include <map>
 #include <string>
@@ -18,17 +19,71 @@ namespace os_config
         {"rr", CPU::RR}
     };
 
-
-    // TODO: MO1 file config --> hardcoded for now
+    // Default values
     int num_cpu = 4;
-    CPU::Algorithm scheduler = algorithm_map["fcfs"];
-    // TODO: Change Process attributes to long long int as well
-    long long int quantum_cycles;
-    long long int batch_process_freq;
+    CPU::Algorithm scheduler = CPU::FCFS;
+    long long int quantum_cycles = 100LL;
+    long long int batch_process_freq = 100LL;
     long long int min_ins = 100LL;
-	long long int max_ins = 100LL;
+    long long int max_ins = 100LL;
     long long int delays_per_exec = 100000LL;
 
+
+    void loadConfig(const std::string& configFile) {
+        std::ifstream file(configFile);
+        std::string line;
+
+        if (file.is_open()) {
+            while (getline(file, line)) {
+                std::istringstream iss(line);
+                std::string key, value;
+
+                if (!(iss >> key >> value)) {
+                    continue;
+                }
+
+                if (key == "num-cpu") {
+                    num_cpu = std::stoi(value);
+                }
+                else if (key == "scheduler") {
+                    scheduler = algorithm_map[value];
+                }
+                else if (key == "quantum-cycles") {
+                    quantum_cycles = std::stoll(value);
+                }
+                else if (key == "batch-process-freq") {
+                    batch_process_freq = std::stoll(value);
+                }
+                else if (key == "min-ins") {
+                    min_ins = std::stoll(value);
+                }
+                else if (key == "max-ins") {
+                    max_ins = std::stoll(value);
+                }
+                else if (key == "delay-per-exec") {
+                    delays_per_exec = std::stoll(value);
+                }
+            }
+            file.close();
+        }
+        else {
+            std::cerr << "Unable to open config file: " << configFile << std::endl;
+        }
+    }
+
+    void printConfig() {
+        std::cout << "Current Configuration:" << std::endl;
+        std::cout << "Number of CPUs: " << num_cpu << std::endl;
+
+        std::string scheduler_name = (scheduler == CPU::FCFS) ? "FCFS" : "RR";
+        std::cout << "Scheduler: " << scheduler_name << std::endl;
+
+        std::cout << "Quantum Cycles: " << quantum_cycles << std::endl;
+        std::cout << "Batch Process Frequency: " << batch_process_freq << std::endl;
+        std::cout << "Min Instructions: " << min_ins << std::endl;
+        std::cout << "Max Instructions: " << max_ins << std::endl;
+        std::cout << "Delays Per Execution: " << delays_per_exec << std::endl;
+    }
 
 }
 
@@ -164,7 +219,9 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
 
 int main() {
 
-    // TODO: MO1 -> Retrieve config file and assign os_config values
+    os_config::loadConfig("config.txt");
+    // os_config::printConfig();
+
 
 	global_objects::scheduler.runScheduler();
     shell_commands::draw_header();

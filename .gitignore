@@ -361,3 +361,16 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+/logs.zip
+/process_0.txt
+/process_1.txt
+/process_2.txt
+/process_3.txt
+/process_4.txt
+/process_5.txt
+/process_6.txt
+/process_7.txt
+/process_8.txt
+/process_9.txt
+/config.txt
