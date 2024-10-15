@@ -1,17 +1,17 @@
 #include "Worker.h"
 #include <thread>
 
-Worker::Worker() {
-    std::thread cpuThread([this]() {
+Worker::Worker() :
+    workerThread([this]() {
         while (enabled) {
             loop();
         }
-        });
-    cpuThread.detach();
+    }) {
 }
 
 Worker::~Worker() {
     enabled = false;
+    workerThread.join(); // wait for thread to exit
 }
 
 void Worker::setup() {

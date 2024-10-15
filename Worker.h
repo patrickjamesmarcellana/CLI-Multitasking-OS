@@ -17,5 +17,6 @@ protected:
         std::this_thread::sleep_for(duration);
     };
 
+    std::thread workerThread;
     bool enabled = true;
 };
