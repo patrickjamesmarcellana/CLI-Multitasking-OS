@@ -45,11 +45,10 @@ void CPU::loop() {
             {
                 this->is_busy = false;
             }
-
-            {
-                std::unique_lock lock(lock_cpu_stats);
-                cpu_stats.increment_active();
-            }
+            cpu_usage.setActive();
+        } else {
+            // todo: do not set every cycle
+            cpu_usage.setIdle();
         }
 
         //sleep(100ms);
@@ -59,10 +58,6 @@ void CPU::loop() {
         // Note, when returning back to ready queue -> set core id of process to -1
     }
 
-    {
-        std::unique_lock lock(lock_cpu_stats);
-        cpu_stats.increment_total();
-    }
     this->inc_cpu_counter();
 }
 
@@ -77,7 +72,6 @@ void CPU::inc_cpu_counter()
     this->process_cpu_counter++;
 }
 
-CPU::cpu_stats_t CPU::get_cpu_stats() {
-    std::shared_lock lock(lock_cpu_stats);
-    return this->cpu_stats;
+float CPU::get_cpu_usage() {
+    return this->cpu_usage.getUsage();
 }
