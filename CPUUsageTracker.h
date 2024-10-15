@@ -30,15 +30,16 @@ class CPUTracker {
             std::chrono::duration<float, std::nano> cpu_active_ns = 0ns;
             std::chrono::duration<float, std::nano> cpu_total_ns = 0ns;
 
+            auto time_now = std::chrono::steady_clock::now();
             auto cpu_event = cpu_event_log.begin();
             while(cpu_event != cpu_event_log.end()) {
                 // calculate start time from current event
-                auto event_start_time = cpu_event->first;
+                auto event_start_time = max(cpu_event->first, time_now); // only consider the part that is inside the time window
                 auto event_type = cpu_event->second;
                 
                 // calculate end time from start time of next event
                 cpu_event++; 
-                auto event_end_time = cpu_event != cpu_event_log.end() ? cpu_event->first : std::chrono::steady_clock::now() /* event still in progress - use current time instead */;
+                auto event_end_time = cpu_event != cpu_event_log.end() ? cpu_event->first : time_now /* event still in progress - use current time instead */;
                 auto event_duration = event_end_time - event_start_time;
 
                 // increment counters
