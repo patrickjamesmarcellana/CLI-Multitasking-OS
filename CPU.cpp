@@ -6,16 +6,19 @@
 using namespace std::literals::chrono_literals;
 
 
-CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, long long int delay_per_exec) : Worker(),
+CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, long long int delay_per_exec, CPUSemaphores& semaphores) : Worker(),
 id(id),
 algorithm(algorithm),
 process_queue(process_queue),
-delay_per_exec(delay_per_exec)
+delay_per_exec(delay_per_exec),
+semaphores(semaphores)
 //time_created(std::chrono::system_clock::now())
 {
 }
 
 void CPU::loop() {
+    semaphores.waitUntilCycleStart();
+
     if(algorithm == FCFS)
     {
         if (!active_process || active_process->getCurrLine() >= active_process->getTotalLines()) {
@@ -58,6 +61,7 @@ void CPU::loop() {
         // Note, when returning back to ready queue -> set core id of process to -1
     }
 
+    semaphores.notifyDone();
     this->inc_cpu_counter();
 }
 

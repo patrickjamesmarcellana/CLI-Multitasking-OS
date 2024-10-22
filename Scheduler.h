@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "CPU.h"
+#include "CPUClockSource.h"
 #include "Process.h"
 
 class Scheduler
@@ -21,6 +22,7 @@ public:
 private:
 	int num_cores;
 	CPU::Algorithm algorithm;
+	CPUClockSource cpuClockSource;
 	std::vector<std::shared_ptr<CPU>> cpu_cores;
 	std::shared_ptr<ConcurrentPtrQueue<Process>> process_queue;
 	long long int delay_per_exec;

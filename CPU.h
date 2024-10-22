@@ -2,6 +2,7 @@
 #include <memory>
 #include <queue>
 #include <shared_mutex>
+#include "CPUClockSource.h"
 #include "CPUUsageTracker.h"
 #include "ConcurrentPtrQueue.h"
 #include "Process.h"
@@ -19,7 +20,7 @@ public:
         RR
     };
 
-    CPU(int id, Algorithm algorithm, ProcessQueue process_queue, long long int delay_per_exec);
+    CPU(int id, Algorithm algorithm, ProcessQueue process_queue, long long int delay_per_exec, CPUSemaphores& semaphores);
     ~CPU() = default;
     bool get_is_busy();
     void inc_cpu_counter();
@@ -37,4 +38,6 @@ private:
     long long int process_cpu_counter = 0;
     
     CPUTracker cpu_usage;
+
+    CPUSemaphores& semaphores;
 };
