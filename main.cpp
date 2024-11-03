@@ -139,6 +139,35 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         return command_string;
     }
 
+    void dump_state_to_stream(std::ostream &stream) {
+        stream << "CPU utilization: " << global_objects::scheduler.get_cpu_utilization() << "%" << std::endl;
+        stream << "Cores used: " << global_objects::scheduler.get_cores_used() << std::endl;
+        stream << "Cores available: " << global_objects::scheduler.get_cores_available() << std::endl;
+        stream << "\n" << "---------------------------------------------" << std::endl;
+        stream << "Running processes:" << std::endl;
+        for(auto process : global_objects::process_map)
+        {
+            if(!process.second->is_done_executing() && process.second->get_assigned_core_id() != -1)
+            {
+                stream << process.second->getProcessName() << "\t" << process.second->get_time_executed() << "\t"
+                << "Core: " << process.second->get_assigned_core_id() << "\t" << process.second->getCurrLine() << " / "
+                << process.second->getTotalLines() << std::endl;
+            }
+        }
+
+        stream << "\nFinished processes:" << std::endl;
+        for (auto process : global_objects::process_map)
+        {
+            if (process.second->is_done_executing())
+            {
+                stream << process.second->getProcessName() << "\t" << process.second->get_time_executed() << "\t"
+                    << "Finished" << "\t" << process.second->getCurrLine() << " / "
+                    << process.second->getTotalLines() << std::endl;
+            }
+        }
+        stream << std::endl;
+    }
+
     void route_screen(std::vector<String> command_tokens) {
 
         if (command_tokens[1] == "-r") {
@@ -177,32 +206,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
             }
         } else if (command_tokens[1] == "-ls")
         {
-            std::cout << "CPU utilization: " << global_objects::scheduler.get_cpu_utilization() << "%" << std::endl;
-            std::cout << "Cores used: " << global_objects::scheduler.get_cores_used() << std::endl;
-            std::cout << "Cores available: " << global_objects::scheduler.get_cores_available() << std::endl;
-            std::cout << "\n" << "---------------------------------------------" << std::endl;
-            std::cout << "Running processes:" << std::endl;
-            for(auto process : global_objects::process_map)
-            {
-	            if(!process.second->is_done_executing() && process.second->get_assigned_core_id() != -1)
-	            {
-                    std::cout << process.second->getProcessName() << "\t" << process.second->get_time_executed() << "\t"
-	            	<< "Core: " << process.second->get_assigned_core_id() << "\t" << process.second->getCurrLine() << " / "
-	            	<< process.second->getTotalLines() << std::endl;
-	            }
-            }
-
-            std::cout << "\nFinished processes:" << std::endl;
-            for (auto process : global_objects::process_map)
-            {
-                if (process.second->is_done_executing())
-                {
-                    std::cout << process.second->getProcessName() << "\t" << process.second->get_time_executed() << "\t"
-                        << "Finished" << "\t" << process.second->getCurrLine() << " / "
-                        << process.second->getTotalLines() << std::endl;
-                }
-            }
-            std::cout << std::endl;
+            dump_state_to_stream(std::cout);
         }
     }
 
@@ -213,7 +217,10 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"screen", route_screen},
         {"scheduler-test", [](auto) {global_objects::process_manager.generate_processes(10);}}, // TODO: Un-hardcode this number
         {"scheduler-stop", stub},
-        {"report-util", stub},
+        {"report-util", [](auto) {
+            std::ofstream stream("csopesy-log.txt", std::ios::app);
+            dump_state_to_stream(stream);
+        }},
     };
 }
 
