@@ -93,7 +93,7 @@ namespace global_objects
     std::shared_ptr<ConcurrentPtrQueue<Process>> process_queue = std::make_shared<ConcurrentPtrQueue<Process>>();
     ProcessManager process_manager = ProcessManager(process_map, process_queue, os_config::min_ins, os_config::max_ins, os_config::batch_process_freq);
 
-    Scheduler scheduler = Scheduler(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, os_config::delays_per_exec);
+    Scheduler scheduler = Scheduler(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, os_config::quantum_cycles, os_config::delays_per_exec);
 }
 
 

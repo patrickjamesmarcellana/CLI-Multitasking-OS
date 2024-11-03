@@ -19,7 +19,7 @@ public:
         RR
     };
 
-    CPU(int id, Algorithm algorithm, ProcessQueue process_queue, long long int delay_per_exec);
+    CPU(int id, Algorithm algorithm, ProcessQueue process_queue, long long int quantum_cycles, long long int delay_per_exec);
     ~CPU() = default;
     bool get_is_busy();
     void inc_cpu_counter();
@@ -31,10 +31,12 @@ private:
     Algorithm algorithm;
     ProcessPtr active_process;
     ProcessQueue process_queue;
+    long long int quantum_cycles;
     long long int delay_per_exec;
     virtual void loop();
     bool is_busy = false;
     long long int process_cpu_counter = 0;
+    long long int active_process_time_slice_expiry;
     
     CPUTracker cpu_usage;
 };
