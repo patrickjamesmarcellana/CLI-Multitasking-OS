@@ -93,7 +93,7 @@ namespace global_objects
     std::shared_ptr<ConcurrentPtrQueue<Process>> process_queue = std::make_shared<ConcurrentPtrQueue<Process>>();
     ProcessManager process_manager = ProcessManager(process_map, process_queue, os_config::min_ins, os_config::max_ins, os_config::batch_process_freq);
 
-    Scheduler scheduler = Scheduler(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, os_config::quantum_cycles, os_config::delays_per_exec);
+    std::unique_ptr<Scheduler> scheduler;
 }
 
 
@@ -140,9 +140,9 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
     }
 
     void dump_state_to_stream(std::ostream &stream) {
-        stream << "CPU utilization: " << global_objects::scheduler.get_cpu_utilization() << "%" << std::endl;
-        stream << "Cores used: " << global_objects::scheduler.get_cores_used() << std::endl;
-        stream << "Cores available: " << global_objects::scheduler.get_cores_available() << std::endl;
+        stream << "CPU utilization: " << global_objects::scheduler->get_cpu_utilization() << "%" << std::endl;
+        stream << "Cores used: " << global_objects::scheduler->get_cores_used() << std::endl;
+        stream << "Cores available: " << global_objects::scheduler->get_cores_available() << std::endl;
         stream << "\n" << "---------------------------------------------" << std::endl;
         stream << "Running processes:" << std::endl;
         for(auto process : global_objects::process_map)
@@ -213,7 +213,13 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
     const std::map<std::string, command_handler> command_map = {
         {"clear", [](auto) { clear_screen(); draw_header(); }},
         {"exit",  [](auto) { exit(0); }},
-        {"initialize", stub},
+        {"initialize", [](auto) {
+            os_config::loadConfig("config.txt");
+            // os_config::printConfig();
+
+            global_objects::scheduler = std::make_unique<Scheduler>(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, os_config::quantum_cycles, os_config::delays_per_exec);
+            global_objects::scheduler->runScheduler();
+        }},
         {"screen", route_screen},
         {"scheduler-test", [](auto) {global_objects::process_manager.generate_processes(10);}}, // TODO: Un-hardcode this number
         {"scheduler-stop", stub},
@@ -225,12 +231,6 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
 }
 
 int main() {
-
-    os_config::loadConfig("config.txt");
-    // os_config::printConfig();
-
-
-	global_objects::scheduler.runScheduler();
     shell_commands::draw_header();
 
     while (true) {
@@ -241,7 +241,11 @@ int main() {
 
             auto found_command = shell_commands::command_map.find(command_name);
             if (found_command != shell_commands::command_map.end()) {
-                found_command->second(command_tokens);
+                if(global_objects::scheduler || command_name == "initialize" || command_name == "exit" ) {
+                    found_command->second(command_tokens);
+                } else {
+                    std::cout << "Processor configuration not yet initialized. Run the \"initialize\" command first." << std::endl;
+                }
             }
             else {
                 std::cout << "Command not recognized.\n" << std::endl;
