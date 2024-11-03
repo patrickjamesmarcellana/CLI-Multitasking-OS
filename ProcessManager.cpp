@@ -14,6 +14,7 @@ batch_process_freq(batch_process_freq)
 
 std::shared_ptr<Process> ProcessManager::save_process(std::string process_name)
 {
+	std::unique_lock lock(process_map_lock);
 	long long int total_lines = generate_random_total_lines();
 	std::shared_ptr<Process> new_process = std::make_shared<Process>(this->process_map.size(), process_name, total_lines);
 	this->process_map[process_name] = new_process;
@@ -23,6 +24,7 @@ std::shared_ptr<Process> ProcessManager::save_process(std::string process_name)
 
 std::shared_ptr<Process> ProcessManager::get_process(std::string process_name)
 {
+	std::shared_lock lock(process_map_lock);
 	return this->process_map[process_name];
 }
 
@@ -41,23 +43,17 @@ long long int ProcessManager::generate_random_total_lines()
 	return distr(gen);
 }
 
-void ProcessManager::generate_processes(int count)
+bool ProcessManager::is_generating_processes()
 {
-	for(int i = 0; i < count; i++)
-	{
-		this->save_process("process_" + std::to_string(i));
-	}
-
-	// TODO: For MO1
-	//bool running = true;
-	//while(running)
-	//{
-	//	this->save_process("process_" + std::to_string(this->process_map.size()));
-	//}
+	return this->process_generator != nullptr;
 }
 
 void ProcessManager::scheduler_test_thread()
 {
-	std::thread generate_process_thread(&ProcessManager::generate_processes, this, 10);
-	generate_process_thread.detach();
+	this->process_generator = std::make_unique<ProcessGenerator>(*this, batch_process_freq);
+}
+
+void ProcessManager::scheduler_test_thread_stop()
+{
+	this->process_generator = nullptr;
 }

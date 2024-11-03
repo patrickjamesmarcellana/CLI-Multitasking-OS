@@ -221,8 +221,22 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
             global_objects::scheduler->runScheduler();
         }},
         {"screen", route_screen},
-        {"scheduler-test", [](auto) {global_objects::process_manager.generate_processes(10);}}, // TODO: Un-hardcode this number
-        {"scheduler-stop", stub},
+        {"scheduler-test", [](auto) {
+            if(global_objects::process_manager.is_generating_processes()) {
+                std::cout << "scheduler-test already started." << std::endl;
+                return;
+            }
+            
+            global_objects::process_manager.scheduler_test_thread();
+        }},
+        {"scheduler-stop", [](auto) {
+            if(!global_objects::process_manager.is_generating_processes()) {
+                std::cout << "scheduler-test already stopped." << std::endl;
+                return;
+            }
+            
+            global_objects::process_manager.scheduler_test_thread_stop();
+        }},
         {"report-util", [](auto) {
             std::ofstream stream("csopesy-log.txt", std::ios::app);
             dump_state_to_stream(stream);
