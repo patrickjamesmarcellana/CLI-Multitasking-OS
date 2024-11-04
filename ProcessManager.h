@@ -47,6 +47,7 @@ private:
 	long long int min_ins;
 	long long int max_ins;
 	long long int batch_process_freq;
-	std::shared_mutex& process_map_lock;
+	std::shared_mutex& entire_process_map_lock;
+	std::shared_mutex fine_grain_process_map_rw_lock;
 };
 
