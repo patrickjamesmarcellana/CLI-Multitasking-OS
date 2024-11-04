@@ -47,7 +47,10 @@ int Scheduler::get_cpu_utilization()
 {
 	float cpu_utilization = 0.0;
 	for(auto& cpu : this->cpu_cores) {
-		cpu_utilization += cpu->get_cpu_usage() / this->cpu_cores.size();
+		if(cpu->get_is_busy())
+		{
+			cpu_utilization += 25.0f;
+		}
 	}
  	return cpu_utilization;
 }
