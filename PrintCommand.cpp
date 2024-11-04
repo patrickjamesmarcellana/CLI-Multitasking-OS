@@ -8,7 +8,6 @@ to_print(to_print)
 
 void PrintCommand::execute(int core_id, SystemTime time_executed)
 {
-    return;
     // create a file if it does not exist yet
     std::string filename = this->get_process_name() + ".txt";
     std::ifstream infile(filename);
