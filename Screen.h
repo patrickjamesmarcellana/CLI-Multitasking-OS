@@ -29,5 +29,5 @@ public:
 
 namespace str_parsing_methods {
     std::vector<std::string> split_string_by_space(String string);
-    void remove_quotes(String& text);
+    std::string remove_quotes(String text);
 }

@@ -38,16 +38,17 @@ namespace os_config
                 std::istringstream iss(line);
                 std::string key, value;
 
-                str_parsing_methods::remove_quotes(value);
-
                 if (!(iss >> key >> value)) {
                     continue;
                 }
+
+                value = str_parsing_methods::remove_quotes(value);
 
                 if (key == "num-cpu") {
                     num_cpu = std::stoi(value);
                 }
                 else if (key == "scheduler") {
+                    std::cout << value << std::endl;
                     scheduler = algorithm_map[value];
                 }
                 else if (key == "quantum-cycles") {
