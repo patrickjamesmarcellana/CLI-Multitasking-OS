@@ -55,5 +55,5 @@ int Scheduler::get_total_cores()
 
 int Scheduler::get_cpu_utilization()
 {
-	return this->get_cores_used() / this->get_cores_available() * 100;
+	return this->get_cores_used() / this->num_cores * 100;
 }
