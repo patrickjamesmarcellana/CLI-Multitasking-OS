@@ -28,7 +28,7 @@ public:
 private:
 	class ProcessGenerator : public Worker {
 	public:
-		ProcessGenerator(ProcessManager &pm, long long int freq) : Worker(), freq(freq), pm(pm) {}
+		ProcessGenerator(ProcessManager &pm, long long int& freq) : Worker(), freq(freq), pm(pm) {}
 	protected:
 		virtual void loop() {
 			if(cpuCycle++ % freq == 0) {
