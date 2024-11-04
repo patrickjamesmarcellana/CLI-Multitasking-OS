@@ -137,7 +137,6 @@
     <ClCompile Include="ProcessManager.cpp" />
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="Screen.cpp" />
-    <ClCompile Include="Worker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Command.h" />
