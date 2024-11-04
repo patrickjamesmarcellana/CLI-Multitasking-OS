@@ -37,7 +37,7 @@ private:
 		}
 	private:
 			long long int cpuCycle = 0;
-			long long int freq;
+			long long int& freq;
 			ProcessManager &pm;
 	};
 
