@@ -8,7 +8,7 @@
 #include "Worker.h"
 
 
-class CPU : Worker {
+class CPU : public Worker {
 public:
     typedef std::shared_ptr<Process> ProcessPtr;
     typedef std::shared_ptr<ConcurrentPtrQueue<Process>>& ProcessQueue;
