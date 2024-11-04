@@ -21,6 +21,20 @@ void CPU::loop() {
     // prevents screen -ls/report-util from running until all CPUs release this
     std::shared_lock prevent_lock_entire_process_map(process_map_lock);
 
+    if (active_process) {
+        if (active_process->getCurrLine() >= active_process->getTotalLines())
+        {
+            this->active_process = nullptr;
+        }
+        else if (algorithm == RR && active_process->getCurrLine() >= this->active_process_time_slice_expiry) // otherwise, check if its time slice is expired (if RR)
+        {
+            // Note, when returning back to ready queue -> set core id of process to -1
+            this->active_process->set_assigned_core_id(-1);
+            process_queue->push(this->active_process);
+            this->active_process = nullptr;
+        }
+    }
+
     if (!active_process || active_process->getCurrLine() >= active_process->getTotalLines()) {
         this->is_busy = false;
         active_process = this->process_queue->try_pop();
@@ -48,13 +62,6 @@ void CPU::loop() {
             {
                 this->is_busy = false;
             }
-            else if(algorithm == RR && active_process->getCurrLine() >= this->active_process_time_slice_expiry) // otherwise if the process is not over, check if its time slice is expired (if RR)
-            {
-                // Note, when returning back to ready queue -> set core id of process to -1
-                this->active_process->set_assigned_core_id(-1);
-                process_queue->push(this->active_process);
-                this->active_process = nullptr;
-            }
         }
 
         //sleep(100ms);
@@ -63,8 +70,6 @@ void CPU::loop() {
         // todo: do not set every cycle
         cpu_usage.setIdle();
     }
-
-
 
     this->inc_cpu_counter();
 }
