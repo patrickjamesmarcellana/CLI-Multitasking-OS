@@ -48,7 +48,6 @@ namespace os_config
                     num_cpu = std::stoi(value);
                 }
                 else if (key == "scheduler") {
-                    std::cout << value << std::endl;
                     scheduler = algorithm_map[value];
                 }
                 else if (key == "quantum-cycles") {
