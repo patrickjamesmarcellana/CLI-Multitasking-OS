@@ -13,7 +13,7 @@ public:
 	typedef std::unordered_map<std::string, std::shared_ptr<Process>>& ProcessMap;
 	typedef std::shared_ptr<ConcurrentPtrQueue<Process>>& ProcessQueue;
 
-	ProcessManager(ProcessMap process_map, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq);
+	ProcessManager(ProcessMap process_map, std::shared_mutex& process_map_lock, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq);
 	~ProcessManager() = default;
 
 	std::shared_ptr<Process> save_process(std::string process_name);
@@ -47,6 +47,6 @@ private:
 	long long int min_ins;
 	long long int max_ins;
 	long long int batch_process_freq;
-	std::shared_mutex process_map_lock;
+	std::shared_mutex& process_map_lock;
 };
 

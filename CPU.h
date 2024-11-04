@@ -19,7 +19,7 @@ public:
         RR
     };
 
-    CPU(int id, Algorithm algorithm, ProcessQueue process_queue, long long int quantum_cycles, long long int delay_per_exec);
+    CPU(int id, Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec);
     ~CPU() = default;
     bool get_is_busy();
     void inc_cpu_counter();
@@ -31,6 +31,7 @@ private:
     Algorithm algorithm;
     ProcessPtr active_process;
     ProcessQueue process_queue;
+    std::shared_mutex& process_map_lock;
     long long int quantum_cycles;
     long long int delay_per_exec;
     virtual void loop();
