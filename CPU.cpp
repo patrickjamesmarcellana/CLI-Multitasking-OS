@@ -49,7 +49,7 @@ void CPU::loop() {
     }
 
     if (active_process && active_process->getCurrLine() < active_process->getTotalLines()) {
-        if(this->process_cpu_counter % this->delay_per_exec == 0)
+        if(this->process_cpu_counter % (this->delay_per_exec + 1) == 0)
         {
             this->process_cpu_counter = 0;
             // get the command from the command list that is parallel to the current line of instruction, then execute it by passing the core ID
