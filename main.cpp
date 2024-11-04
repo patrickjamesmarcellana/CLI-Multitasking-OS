@@ -241,7 +241,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
             global_objects::process_manager.scheduler_test_thread_stop();
         }},
         {"report-util", [](auto) {
-            std::ofstream stream("csopesy-log.txt", std::ios::app);
+            std::ofstream stream("csopesy-log.txt", std::ios::trunc);
             dump_state_to_stream(stream);
         }},
     };
