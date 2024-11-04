@@ -68,4 +68,9 @@ namespace str_parsing_methods {
 
         return tokens_list;
     }
+
+	void remove_quotes(String& text)
+    {
+        text.erase(std::remove(text.begin(), text.end(), '\"'), text.end());
+    }
 }
