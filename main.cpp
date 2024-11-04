@@ -161,7 +161,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         stream << "CPU utilization: " << global_objects::scheduler->get_cpu_utilization() << "%" << std::endl;
         stream << "Cores used: " << global_objects::scheduler->get_cores_used() << std::endl;
         stream << "Cores available: " << global_objects::scheduler->get_cores_available() << std::endl;
-        stream << "Number of Process in Map: " << global_objects::process_map.size() << std::endl;
+        //stream << "Number of Process in Map: " << global_objects::process_map.size() << std::endl;
         stream << "\n" << "---------------------------------------------" << std::endl;
         stream << "Running processes:" << std::endl;
         for(auto process : global_objects::process_map)
