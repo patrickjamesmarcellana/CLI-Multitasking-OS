@@ -26,6 +26,18 @@ void PrintCommand::execute(int core_id, SystemTime time_executed)
     std::ofstream appendfile(filename, std::ios::app);
     if (appendfile.good())
     {
-        appendfile << "(" << time_executed << ")" << " Core:" << core_id << " \"" << to_print << "\"" << std::endl;
+        appendfile << this->format_time(time_executed) << " Core:" << core_id << " \"" << to_print << "\"" << std::endl;
     }
+}
+
+std::string PrintCommand::format_time(const std::chrono::time_point<std::chrono::system_clock>& time_executed) {
+    std::time_t time_t_time_executed = std::chrono::system_clock::to_time_t(time_executed);
+    std::tm local_time_executed;
+
+	localtime_s(&local_time_executed, &time_t_time_executed);
+
+    std::ostringstream oss;
+    oss << "(" << std::put_time(&local_time_executed, "%m/%d/%Y %I:%M:%S%p") << ")";
+
+    return oss.str();
 }

@@ -17,5 +17,6 @@ public:
 	PrintCommand(std::string to_print, std::string process_name);
 	~PrintCommand() = default;
 	void execute(int core_id, SystemTime time_executed) override;
+	std::string format_time(const std::chrono::time_point<std::chrono::system_clock>& time_executed);
 };
 
