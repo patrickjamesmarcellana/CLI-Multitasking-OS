@@ -141,6 +141,19 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         return command_string;
     }
 
+    std::string format_time(const std::chrono::time_point<std::chrono::system_clock>& time_executed) {
+        std::time_t time_t_time_executed = std::chrono::system_clock::to_time_t(time_executed);
+        std::tm local_time_executed;
+
+        localtime_s(&local_time_executed, &time_t_time_executed);
+
+        std::ostringstream oss;
+        oss << "(" << std::put_time(&local_time_executed, "%m/%d/%Y %I:%M:%S%p") << ")";
+
+        return oss.str();
+    }
+
+
     void dump_state_to_stream(std::ostream &stream) {
         stream << "CPU utilization: " << global_objects::scheduler->get_cpu_utilization() << "%" << std::endl;
         stream << "Cores used: " << global_objects::scheduler->get_cores_used() << std::endl;
@@ -152,8 +165,8 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {
             if(!process.second->is_done_executing() && process.second->get_assigned_core_id() != -1)
             {
-                stream << process.second->getProcessName() << "\t" << process.second->get_time_executed() << "\t"
-                << "Core: " << process.second->get_assigned_core_id() << "\t" << process.second->getCurrLine() << " / "
+                stream << process.second->getProcessName() << "\t" << format_time( process.second->get_time_executed()) << "\t\t"
+                << "Core: " << process.second->get_assigned_core_id() << "\t\t" << process.second->getCurrLine() << " / "
                 << process.second->getTotalLines() << std::endl;
             }
         }
