@@ -27,8 +27,15 @@ void Screen::displayProcessInfo()
     auto local_time = std::chrono::current_zone()->to_local(this->runningProcess->getArrivalTime());
     std::cout << std::format("{:%m/%d/%Y %r}", round<std::chrono::seconds>(local_time)) << std::endl; // see fmt.dev for syntax
 
-    std::cout << "\nCurrent instruction line: " << this->runningProcess->getCurrLine() << std::endl;
-    std::cout << "Lines of code: " << this->runningProcess->getTotalLines() << std::endl;
+    if(this->runningProcess->getCurrLine() < this->runningProcess ->getTotalLines())
+    {
+        std::cout << "\nCurrent instruction line: " << this->runningProcess->getCurrLine() << std::endl;
+        std::cout << "Lines of code: " << this->runningProcess->getTotalLines() << std::endl;
+    } else
+    {
+        std::cout << "\nFinished!" << std::endl;
+    }
+    
 }
 
 void Screen::onEnabled()
