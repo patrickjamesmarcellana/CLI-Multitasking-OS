@@ -174,7 +174,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
             String processName = command_tokens[2];
             auto foundProcess = global_objects::process_map.find(processName);
 
-            if (foundProcess != global_objects::process_map.end())
+            if (foundProcess != global_objects::process_map.end() && foundProcess->second->getCurrLine() < foundProcess->second->getTotalLines())
             {
                 clear_screen();
                 Screen screen = Screen(foundProcess->second);
