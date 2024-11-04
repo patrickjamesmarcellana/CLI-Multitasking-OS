@@ -47,7 +47,12 @@ private:
 	long long int min_ins;
 	long long int max_ins;
 	long long int batch_process_freq;
+
+	// prevent both changes to the pointers stored in the process map and changes to the individual process
+	// used when printing out process map
 	std::shared_mutex& entire_process_map_lock;
+
+	// prevent changes to the pointers stored in the process map, but allow changes to an indivudal process
 	std::shared_mutex fine_grain_process_map_rw_lock;
 };
 
