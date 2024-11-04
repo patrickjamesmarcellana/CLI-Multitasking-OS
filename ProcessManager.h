@@ -25,7 +25,7 @@ public:
 	void scheduler_test_thread_stop();
 
 private:
-	class ProcessGenerator : Worker {
+	class ProcessGenerator : public Worker {
 	public:
 		ProcessGenerator(ProcessManager &pm, long long int freq) : Worker(), freq(freq), pm(pm) {}
 	protected:
@@ -42,7 +42,7 @@ private:
 
 	ProcessMap process_map;
 	ProcessQueue process_queue;
-	std::unique_ptr<ProcessGenerator> process_generator;
+	std::unique_ptr<std::jthread> process_generator;
 	long long int min_ins;
 	long long int max_ins;
 	long long int batch_process_freq;

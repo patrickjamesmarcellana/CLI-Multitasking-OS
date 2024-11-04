@@ -22,6 +22,7 @@ private:
 	int num_cores;
 	CPU::Algorithm algorithm;
 	std::vector<std::shared_ptr<CPU>> cpu_cores;
+	std::vector<std::jthread> cpu_core_threads;
 	std::shared_ptr<ConcurrentPtrQueue<Process>> process_queue;
 	long long int quantum_cycles;
 	long long int delay_per_exec;

@@ -50,7 +50,7 @@ bool ProcessManager::is_generating_processes()
 
 void ProcessManager::scheduler_test_thread()
 {
-	this->process_generator = std::make_unique<ProcessGenerator>(*this, batch_process_freq);
+	this->process_generator = std::make_unique<std::jthread>(ProcessGenerator(*this, batch_process_freq));
 }
 
 void ProcessManager::scheduler_test_thread_stop()

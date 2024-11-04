@@ -15,7 +15,16 @@ void Scheduler::runScheduler()
 {
 	for(int cpu_core_id = 0; cpu_core_id < this->num_cores; cpu_core_id++)
 	{
-		this->cpu_cores.push_back(std::make_shared<CPU>(cpu_core_id, this->algorithm, this->process_queue, this->quantum_cycles, this->delay_per_exec));
+		auto cpu = std::make_shared<CPU>(cpu_core_id, this->algorithm, this->process_queue, this->quantum_cycles, this->delay_per_exec);
+		this->cpu_cores.push_back(cpu);
+
+		// cannot directly pass CPU object as jthread wants to copy it
+		// https://stackoverflow.com/questions/10503258/what-is-the-rationale-behind-stdbind-and-stdthread-always-copying-arguments
+		//
+		// can also be solved using std::ref, but it turns the smart pointer into a raw pointer (possibly unsafe)
+		this->cpu_core_threads.push_back(std::jthread([cpu](std::stop_token stopToken) {
+			(*cpu)(stopToken);
+		})); 
 	}
 }
 
