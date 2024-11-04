@@ -23,6 +23,7 @@ public:
 	bool is_generating_processes();
 	void scheduler_test_thread();
 	void scheduler_test_thread_stop();
+	void update_configuration(long long int min_ins, long long int max_ins, long long int batch_process_freq);
 
 private:
 	class ProcessGenerator : public Worker {

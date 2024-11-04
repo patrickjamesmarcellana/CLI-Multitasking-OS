@@ -57,3 +57,11 @@ void ProcessManager::scheduler_test_thread_stop()
 {
 	this->process_generator = nullptr;
 }
+
+void ProcessManager::update_configuration(long long int min_ins, long long int max_ins,
+	long long int batch_process_freq)
+{
+	this->min_ins = min_ins;
+	this->max_ins = max_ins;
+	this->batch_process_freq = batch_process_freq;
+}

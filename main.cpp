@@ -145,6 +145,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         stream << "CPU utilization: " << global_objects::scheduler->get_cpu_utilization() << "%" << std::endl;
         stream << "Cores used: " << global_objects::scheduler->get_cores_used() << std::endl;
         stream << "Cores available: " << global_objects::scheduler->get_cores_available() << std::endl;
+        stream << "Number of Process in Map: " << global_objects::process_map.size() << std::endl;
         stream << "\n" << "---------------------------------------------" << std::endl;
         stream << "Running processes:" << std::endl;
         for(auto process : global_objects::process_map)
@@ -218,7 +219,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"initialize", [](auto) {
             os_config::loadConfig("config.txt");
             // os_config::printConfig();
-
+            global_objects::process_manager.update_configuration(os_config::min_ins, os_config::max_ins, os_config::batch_process_freq);
             global_objects::scheduler = std::make_unique<Scheduler>(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, os_config::quantum_cycles, os_config::delays_per_exec);
             global_objects::scheduler->runScheduler();
         }},
