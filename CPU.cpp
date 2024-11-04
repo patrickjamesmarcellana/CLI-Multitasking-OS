@@ -6,10 +6,11 @@
 using namespace std::literals::chrono_literals;
 
 
-CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, long long int quantum_cycles, long long int delay_per_exec) : Worker(),
+CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec) : Worker(),
 id(id),
 algorithm(algorithm),
 process_queue(process_queue),
+process_map_lock(process_map_lock),
 quantum_cycles(quantum_cycles),
 delay_per_exec(delay_per_exec)
 //time_created(std::chrono::system_clock::now())
@@ -17,6 +18,9 @@ delay_per_exec(delay_per_exec)
 }
 
 void CPU::loop() {
+    // prevents screen -ls/report-util from running until all CPUs release this
+    std::shared_lock prevent_lock_entire_process_map(process_map_lock);
+
     if (!active_process || active_process->getCurrLine() >= active_process->getTotalLines()) {
         this->is_busy = false;
         active_process = this->process_queue->try_pop();

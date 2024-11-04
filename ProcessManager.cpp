@@ -3,8 +3,9 @@
 #include <thread>
 #include <random>
 
-ProcessManager::ProcessManager(ProcessMap process_map, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq) :
+ProcessManager::ProcessManager(ProcessMap process_map, std::shared_mutex &process_map_lock, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq) :
 process_map(process_map),
+process_map_lock(process_map_lock),
 process_queue(process_queue),
 min_ins(min_ins),
 max_ins(max_ins),
@@ -24,7 +25,6 @@ std::shared_ptr<Process> ProcessManager::save_process(std::string process_name)
 
 std::shared_ptr<Process> ProcessManager::get_process(std::string process_name)
 {
-	std::shared_lock lock(process_map_lock);
 	return this->process_map[process_name];
 }
 
