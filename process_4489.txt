@@ -1,0 +1,13 @@
+Process name: process_4489
+Logs:
+
+(11/04/2024 05:34:02PM) Core:29 "Hello world from process_4489"
+(11/04/2024 05:34:13PM) Core:23 "Hello world from process_4489"
+(11/04/2024 05:34:23PM) Core:1 "Hello world from process_4489"
+(11/04/2024 05:34:34PM) Core:19 "Hello world from process_4489"
+(11/04/2024 05:38:43PM) Core:16 "Hello world from process_4489"
+(11/04/2024 05:38:53PM) Core:21 "Hello world from process_4489"
+(11/04/2024 05:39:04PM) Core:3 "Hello world from process_4489"
+(11/04/2024 05:39:14PM) Core:11 "Hello world from process_4489"
+(11/04/2024 05:39:25PM) Core:4 "Hello world from process_4489"
+(11/04/2024 05:39:38PM) Core:28 "Hello world from process_4489"

@@ -1,0 +1,12 @@
+Process name: process_5028
+Logs:
+
+(11/04/2024 05:34:04PM) Core:2 "Hello world from process_5028"
+(11/04/2024 05:34:15PM) Core:30 "Hello world from process_5028"
+(11/04/2024 05:34:25PM) Core:25 "Hello world from process_5028"
+(11/04/2024 05:38:45PM) Core:26 "Hello world from process_5028"
+(11/04/2024 05:38:56PM) Core:11 "Hello world from process_5028"
+(11/04/2024 05:39:06PM) Core:17 "Hello world from process_5028"
+(11/04/2024 05:39:17PM) Core:1 "Hello world from process_5028"
+(11/04/2024 05:39:28PM) Core:14 "Hello world from process_5028"
+(11/04/2024 05:39:41PM) Core:16 "Hello world from process_5028"
