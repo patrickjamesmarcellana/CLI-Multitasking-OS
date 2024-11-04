@@ -168,8 +168,8 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {
             if(!process.second->is_done_executing() && process.second->get_assigned_core_id() != -1)
             {
-                stream << process.second->getProcessName() << "  \t" << format_time( process.second->get_time_executed()) << "\t "
-                << "Core: " << process.second->get_assigned_core_id() << " \t" << process.second->getCurrLine() << " / "
+                stream << process.second->getProcessName() << "\t" << format_time( process.second->get_time_executed()) << "\t\t"
+                << "Core: " << process.second->get_assigned_core_id() << "\t\t" << process.second->getCurrLine() << " / "
                 << process.second->getTotalLines() << std::endl;
             }
         }

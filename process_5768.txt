@@ -1,6 +1,0 @@
-Process name: process_5768
-Logs:
-
-(11/04/2024 05:34:07PM) Core:9 "Hello world from process_5768"
-(11/04/2024 05:34:18PM) Core:2 "Hello world from process_5768"
-(11/04/2024 05:34:28PM) Core:5 "Hello world from process_5768"
