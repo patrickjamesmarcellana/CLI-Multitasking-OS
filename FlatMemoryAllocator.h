@@ -7,7 +7,13 @@
 class FlatMemoryAllocator : public IMemoryAllocator
 {
 public:
-	FlatMemoryAllocator(size_t maximum_size);
+	enum Primary_Fit_Approach
+	{
+		FIRST_FIT
+	};
+
+
+	FlatMemoryAllocator(size_t maximum_size, Primary_Fit_Approach fit_approach);
 	~FlatMemoryAllocator();
 
 	void* allocate(size_t size) override;
@@ -19,6 +25,7 @@ private:
 	size_t allocated_size;
 	std::vector<char> memory;
 	std::unordered_map<size_t, bool> allocation_map;
+	Primary_Fit_Approach fit_approach;
 
 	void initialize_memory();
 	bool can_allocate_at(size_t index, size_t size) const;
