@@ -131,6 +131,7 @@
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="CPU.cpp" />
+    <ClCompile Include="FlatMemoryAllocator.cpp" />
     <ClCompile Include="IMemoryAllocator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PrintCommand.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="ConcurrentPtrQueue.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="CPU.h" />
+    <ClInclude Include="FlatMemoryAllocator.h" />
     <ClInclude Include="IMemoryAllocator.h" />
     <ClInclude Include="PrintCommand.h" />
     <ClInclude Include="Process.h" />
