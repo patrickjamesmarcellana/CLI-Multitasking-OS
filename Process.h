@@ -19,8 +19,10 @@ private:
 	std::vector<std::shared_ptr<Command>> commandList;
 	int assigned_core_id = -1;
 
+	size_t memory_required;
+
 public:
-	Process(int id, String processName, long long int totalLines);
+	Process(int id, String processName, long long int totalLines, size_t memory_required);
 	~Process() = default;
 
 	int getId();

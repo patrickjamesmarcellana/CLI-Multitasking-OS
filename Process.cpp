@@ -2,12 +2,13 @@
 
 #include "PrintCommand.h"
 
-Process::Process(int id, String processName, long long int totalLines) :
+Process::Process(int id, String processName, long long int totalLines, size_t memory_required) :
 	id(id),
 	currLine(0LL),
 	totalLines(totalLines),
 	processName(processName),
-	arrivalTime(std::chrono::system_clock::now())
+	arrivalTime(std::chrono::system_clock::now()),
+	memory_required(memory_required)
 {
 	for(int commandCnt = 0; commandCnt < totalLines; commandCnt++)
 	{
