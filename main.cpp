@@ -28,6 +28,11 @@ namespace os_config
     long long int max_ins = 100LL;
     long long int delays_per_exec = 100000LL;
 
+    long long int max_overall_mem = -1LL;
+    long long int mem_per_frame = -1LL;
+    long long int min_mem_per_proc = -1LL;
+    long long int max_mem_per_proc = -1LL;
+
 
     void loadConfig(const std::string& configFile) {
         std::ifstream file(configFile);
@@ -62,8 +67,24 @@ namespace os_config
                 else if (key == "max-ins") {
                     max_ins = std::stoll(value);
                 }
-                else if (key == "delay-per-exec") {
+                else if (key == "delays-per-exec") {
                     delays_per_exec = std::stoll(value);
+                }
+            	else if (key == "max-overall-mem")
+                {
+                    max_overall_mem = std::stoll(value);
+                }
+                else if (key == "mem-per-frame")
+                {
+                    mem_per_frame = std::stoll(value);
+                }
+            	else if (key == "min-mem-per-proc")
+                {
+                    min_mem_per_proc = std::stoll(value);
+                }
+                else if (key == "max-mem-per-proc")
+                {
+                    max_mem_per_proc = std::stoll(value);
                 }
             }
             file.close();
@@ -85,6 +106,10 @@ namespace os_config
         std::cout << "Min Instructions: " << min_ins << std::endl;
         std::cout << "Max Instructions: " << max_ins << std::endl;
         std::cout << "Delays Per Execution: " << delays_per_exec << std::endl;
+        std::cout << "Maximum Memory Available: " << max_overall_mem << std::endl;
+        std::cout << "Memory Size Per Page: " << mem_per_frame << std::endl;
+        std::cout << "Minimum Memory Required Per Process: " << min_mem_per_proc << std::endl;
+        std::cout << "Maximum Memory Required Per Process: " << max_mem_per_proc << std::endl;
     }
 
 }
@@ -234,7 +259,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"exit",  [](auto) { exit(0); }},
         {"initialize", [](auto) {
             os_config::loadConfig("config.txt");
-            // os_config::printConfig();
+        	os_config::printConfig();
             global_objects::process_manager.update_configuration(os_config::min_ins, os_config::max_ins, os_config::batch_process_freq);
             global_objects::scheduler = std::make_unique<Scheduler>(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, global_objects::process_map_lock, os_config::quantum_cycles, os_config::delays_per_exec);
             global_objects::scheduler->runScheduler();
