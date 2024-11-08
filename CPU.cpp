@@ -44,6 +44,20 @@ float CPU::get_cpu_usage() {
     return this->cpu_usage.getUsage();
 }
 
+void* CPU::try_allocating_memory_for_new_process()
+{
+    std::shared_ptr<Process> process_in_front = this->process_queue->peek_front();
+
+    // try looking for memory space
+    void* memory = nullptr;
+    if (!process_in_front)
+    {
+        memory = this->flat_memory_allocator.allocate(process_in_front->get_memory_required());
+    }
+
+    return memory;
+}
+
 void CPU::deallocate_memory_of_active_process()
 {
     this->flat_memory_allocator.deallocate(this->active_process->get_memory_address(), this->active_process->get_memory_required());
@@ -74,20 +88,11 @@ void CPU::handle_reception_of_process()
 {
     if (!active_process) {
 
-        std::shared_ptr<Process> process_in_front = this->process_queue->peek_front();
-
-        // try looking for memory space
-        void* memory = nullptr;
-        if(!process_in_front)
-        {
-             memory = this->flat_memory_allocator.allocate(process_in_front->get_memory_required());
-        }
-
-        if (memory == nullptr) // no memory space available
+        if (void* memory = this->try_allocating_memory_for_new_process(); memory == nullptr)
         {
             this->active_process = nullptr;
         }
-        else // memory space successfully allocated
+        else
         {
             this->active_process = this->process_queue->try_pop();
             this->active_process->set_memory_address(memory);
