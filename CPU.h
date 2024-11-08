@@ -25,7 +25,6 @@ public:
     ~CPU() = default;
     bool get_is_busy();
     void inc_cpu_counter();
-    void inc_cpu_active_counter();
     float get_cpu_usage();
 
     void handle_finished_processes();
