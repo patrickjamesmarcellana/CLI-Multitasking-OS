@@ -79,7 +79,7 @@ void CPU::handle_finished_processes()
         if (active_process->getCurrLine() >= active_process->getTotalLines()) // if current process finishes executing
         {
             this->active_process = nullptr;
-
+            this->is_busy = false;
             this->deallocate_memory_of_active_process();
         }
         else if (algorithm == RR && active_process->getCurrLine() >= this->active_process_time_slice_expiry) // if time slice is used up when the algorithm is RR
@@ -87,7 +87,7 @@ void CPU::handle_finished_processes()
             this->active_process->set_assigned_core_id(-1);
             process_queue->push(this->active_process);
             this->active_process = nullptr;
-
+            this->is_busy = false;
             this->deallocate_memory_of_active_process();
         }
     }
@@ -95,8 +95,8 @@ void CPU::handle_finished_processes()
 
 void CPU::handle_reception_of_process()
 {
-    if (!active_process || active_process->getCurrLine() >= active_process->getTotalLines()) {
-        this->is_busy = false;
+    if (!active_process) {
+        
 
         // try looking for memory space 
         void* memory = this->flat_memory_allocator.allocate(this->process_queue->peek_front()->get_memory_required());
