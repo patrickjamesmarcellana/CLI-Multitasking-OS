@@ -22,23 +22,9 @@ void CPU::loop() {
     // prevents screen -ls/report-util from running until all CPUs release this
     std::shared_lock prevent_lock_entire_process_map(process_map_lock);
 
-    if (active_process) {
-        if (active_process->getCurrLine() >= active_process->getTotalLines()) // handle condition if current process finishes executing
-        {
-            this->active_process = nullptr;
+    this->handle_finished_processes();
 
-            this->deallocate_memory_of_active_process();
-        }
-        else if (algorithm == RR && active_process->getCurrLine() >= this->active_process_time_slice_expiry) // otherwise, check if its time slice is expired (if RR)
-        {
-            // Note, when returning back to ready queue -> set core id of process to -1
-            this->active_process->set_assigned_core_id(-1);
-            process_queue->push(this->active_process);
-            this->active_process = nullptr;
 
-            this->deallocate_memory_of_active_process();
-        }
-    }
 
     if (!active_process || active_process->getCurrLine() >= active_process->getTotalLines()) {
         this->is_busy = false;
@@ -111,5 +97,26 @@ float CPU::get_cpu_usage() {
 void CPU::deallocate_memory_of_active_process()
 {
     this->flat_memory_allocator.deallocate(this->active_process->get_memory_address(), this->active_process->get_memory_required());
+}
+
+void CPU::handle_finished_processes()
+{
+    if (this->active_process) { // safety check: make sure there is an active process in the CPU
+
+        if (active_process->getCurrLine() >= active_process->getTotalLines()) // if current process finishes executing
+        {
+            this->active_process = nullptr;
+
+            this->deallocate_memory_of_active_process();
+        }
+        else if (algorithm == RR && active_process->getCurrLine() >= this->active_process_time_slice_expiry) // if time slice is used up when the algorithm is RR
+        {
+            this->active_process->set_assigned_core_id(-1);
+            process_queue->push(this->active_process);
+            this->active_process = nullptr;
+
+            this->deallocate_memory_of_active_process();
+        }
+    }
 }
 

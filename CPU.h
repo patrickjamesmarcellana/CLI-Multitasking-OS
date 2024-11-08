@@ -28,6 +28,7 @@ public:
     void inc_cpu_active_counter();
     float get_cpu_usage();
 
+    void handle_finished_processes();
     void deallocate_memory_of_active_process();
 
 private:
