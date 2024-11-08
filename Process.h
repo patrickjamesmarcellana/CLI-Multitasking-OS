@@ -20,6 +20,7 @@ private:
 	int assigned_core_id = -1;
 
 	size_t memory_required;
+	void* memory_address;
 
 public:
 	Process(int id, String processName, long long int totalLines, size_t memory_required);
@@ -37,4 +38,8 @@ public:
 	SystemTime get_time_executed();
 	void set_assigned_core_id(int core_id);
 	int get_assigned_core_id();
+
+	size_t get_memory_required();
+	void* get_memory_address();
+	void set_memory_address(void* memory_address);
 };

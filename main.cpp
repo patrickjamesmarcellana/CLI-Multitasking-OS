@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "CPU.h"
+#include "FlatMemoryAllocator.h"
 #include "ProcessManager.h"
 #include "Scheduler.h"
 #include "Screen.h"
@@ -28,10 +29,10 @@ namespace os_config
     long long int max_ins = 100LL;
     long long int delays_per_exec = 100000LL;
 
-    long long int max_overall_mem = -1LL;
-    long long int mem_per_frame = -1LL;
-    long long int min_mem_per_proc = -1LL;
-    long long int max_mem_per_proc = -1LL;
+    long long int max_overall_mem = 1LL;
+    long long int mem_per_frame = 1LL;
+    long long int min_mem_per_proc = 1LL;
+    long long int max_mem_per_proc = 1LL;
 
 
     void loadConfig(const std::string& configFile) {
@@ -119,7 +120,8 @@ namespace global_objects
     std::unordered_map<std::string, std::shared_ptr<Process>> process_map;
     std::shared_mutex process_map_lock;
     std::shared_ptr<ConcurrentPtrQueue<Process>> process_queue = std::make_shared<ConcurrentPtrQueue<Process>>();
-    ProcessManager process_manager = ProcessManager(process_map, process_map_lock, process_queue, os_config::min_ins, os_config::max_ins, os_config::batch_process_freq);
+    ProcessManager process_manager = ProcessManager(process_map, process_map_lock, process_queue, os_config::min_ins, os_config::max_ins, os_config::batch_process_freq, os_config::min_mem_per_proc, os_config::max_mem_per_proc);
+    FlatMemoryAllocator flat_memory_allocator = FlatMemoryAllocator(os_config::max_overall_mem, FlatMemoryAllocator::FIRST_FIT);
 
     std::unique_ptr<Scheduler> scheduler;
 }
@@ -260,8 +262,9 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"initialize", [](auto) {
             os_config::loadConfig("config.txt");
         	os_config::printConfig();
-            global_objects::process_manager.update_configuration(os_config::min_ins, os_config::max_ins, os_config::batch_process_freq);
-            global_objects::scheduler = std::make_unique<Scheduler>(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, global_objects::process_map_lock, os_config::quantum_cycles, os_config::delays_per_exec);
+            global_objects::process_manager.update_configuration(os_config::min_ins, os_config::max_ins, os_config::batch_process_freq, os_config::min_mem_per_proc, os_config::max_mem_per_proc);
+            global_objects::scheduler = std::make_unique<Scheduler>(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, global_objects::process_map_lock, os_config::quantum_cycles, os_config::delays_per_exec,
+																	global_objects::flat_memory_allocator);
             global_objects::scheduler->runScheduler();
         }},
         {"screen", route_screen},

@@ -6,13 +6,14 @@
 using namespace std::literals::chrono_literals;
 
 
-CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec) : Worker(),
+CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec, FlatMemoryAllocator& flat_memory_allocator) : Worker(),
 id(id),
 algorithm(algorithm),
 process_queue(process_queue),
 process_map_lock(process_map_lock),
 quantum_cycles(quantum_cycles),
-delay_per_exec(delay_per_exec)
+delay_per_exec(delay_per_exec),
+flat_memory_allocator(flat_memory_allocator)
 //time_created(std::chrono::system_clock::now())
 {
 }
@@ -22,9 +23,12 @@ void CPU::loop() {
     std::shared_lock prevent_lock_entire_process_map(process_map_lock);
 
     if (active_process) {
-        if (active_process->getCurrLine() >= active_process->getTotalLines())
+        if (active_process->getCurrLine() >= active_process->getTotalLines()) // handle condition if current process finishes executing
         {
             this->active_process = nullptr;
+
+            // deallocate memory
+            this->flat_memory_allocator.deallocate(this->active_process->get_memory_address(), this->active_process->get_memory_required());
         }
         else if (algorithm == RR && active_process->getCurrLine() >= this->active_process_time_slice_expiry) // otherwise, check if its time slice is expired (if RR)
         {
@@ -37,7 +41,20 @@ void CPU::loop() {
 
     if (!active_process || active_process->getCurrLine() >= active_process->getTotalLines()) {
         this->is_busy = false;
-        active_process = this->process_queue->try_pop();
+
+        // try looking for memory space 
+        void* memory = this->flat_memory_allocator.allocate(this->process_queue->peek_front()->get_memory_required());
+        if (memory == nullptr)
+        {
+            this->active_process = nullptr;
+        }
+        else
+        {
+            this->active_process = this->process_queue->try_pop();
+            this->active_process->set_memory_address(memory);
+        }
+
+        //active_process = this->process_queue->try_pop();
 
         if(active_process) // if CPU finally gets assigned a process
         {
@@ -58,10 +75,11 @@ void CPU::loop() {
             active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
             active_process->incCurrLine();
 
-            if(active_process->getCurrLine() > active_process->getTotalLines()) // check if incrementing curr line ends the process
-            {
-                this->is_busy = false;
-            }
+            //if(active_process->getCurrLine() > active_process->getTotalLines()) // check if incrementing curr line ends the process
+            //{
+            //    this->is_busy = false;
+
+            //}
         }
 
         //sleep(100ms);

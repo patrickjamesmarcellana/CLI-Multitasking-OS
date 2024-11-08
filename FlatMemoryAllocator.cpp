@@ -2,7 +2,8 @@
 
 FlatMemoryAllocator::FlatMemoryAllocator(size_t maximum_size, Primary_Fit_Approach fit_approach) : maximum_size(maximum_size), allocated_size(0), fit_approach(fit_approach)
 {
-	memory.reserve(maximum_size);
+	memory = std::vector<char>(maximum_size, '.');
+	allocation_map = std::vector<bool>(maximum_size, false);
 	initialize_memory();
 }
 
@@ -26,14 +27,16 @@ void* FlatMemoryAllocator::allocate(size_t size)
 
 		return nullptr;
 	}
+
+	return nullptr;
 }
 
-void FlatMemoryAllocator::deallocate(void* ptr)
+void FlatMemoryAllocator::deallocate(void* ptr, size_t size)
 {
 	size_t index = static_cast<char*>(ptr) - &memory[0];
 	if(allocation_map[index])
 	{
-		deallocate_at(index);
+		deallocate_at(index, size);
 	}
 }
 
@@ -64,18 +67,19 @@ void FlatMemoryAllocator::initialize_memory()
 	std::fill(allocation_map.begin(), allocation_map.end(), false);
 }
 
-bool FlatMemoryAllocator::can_allocate_at(size_t index, size_t size) const
+bool FlatMemoryAllocator::can_allocate_at(size_t index, size_t size)
 {
 	return (index + size <= maximum_size);
 }
 
 void FlatMemoryAllocator::allocate_at(size_t index, size_t size)
 {
-	std::fill(allocation_map.begin + index, allocation_map.begin + index + size, true);
+	std::fill(std::next(allocation_map.begin(), index), std::next(allocation_map.begin(), (index + size)), true);
 	allocated_size += size;
 }
 
-void FlatMemoryAllocator::deallocate_at(size_t index)
+void FlatMemoryAllocator::deallocate_at(size_t index, size_t size)
 {
-	allocation_map[index] = false;
+	std::fill(std::next(allocation_map.begin(), index), std::next(allocation_map.begin(), (index + size)), false);
+	allocated_size -= size;
 }

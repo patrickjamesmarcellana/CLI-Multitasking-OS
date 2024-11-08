@@ -75,3 +75,18 @@ int Process::get_assigned_core_id()
 {
 	return this->assigned_core_id;
 }
+
+size_t Process::get_memory_required()
+{
+	return this->memory_required;
+}
+
+void* Process::get_memory_address()
+{
+	return this->memory_address;
+}
+
+void Process::set_memory_address(void* memory_address)
+{
+	this->memory_address = memory_address;
+}

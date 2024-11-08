@@ -20,3 +20,13 @@ std::shared_ptr<T> ConcurrentPtrQueue<T>::try_pop() {
     }
     return std::shared_ptr<T>(nullptr);
 }
+
+template <typename T>
+std::shared_ptr<T> ConcurrentPtrQueue<T>::peek_front() {
+    std::unique_lock lock(queue_mutex);
+    if(queue.size() > 0) {
+        std::shared_ptr<T> ret = queue.front();
+        return ret;
+    }
+    return std::shared_ptr<T>(nullptr);
+}

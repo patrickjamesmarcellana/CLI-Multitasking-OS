@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
+#include <algorithm>
 
 #include "IMemoryAllocator.h"
 
@@ -17,19 +18,19 @@ public:
 	~FlatMemoryAllocator();
 
 	void* allocate(size_t size) override;
-	void deallocate(void* ptr) override;
+	void deallocate(void* ptr, size_t size) override;
 	std::string visualize_memory() override;
 
 private:
 	size_t maximum_size;
 	size_t allocated_size;
 	std::vector<char> memory;
-	std::unordered_map<size_t, bool> allocation_map;
+	std::vector<bool> allocation_map;
 	Primary_Fit_Approach fit_approach;
 
 	void initialize_memory();
-	bool can_allocate_at(size_t index, size_t size) const;
+	bool can_allocate_at(size_t index, size_t size);
 	void allocate_at(size_t index, size_t size);
-	void deallocate_at(size_t index);
+	void deallocate_at(size_t index, size_t size);
 };
 

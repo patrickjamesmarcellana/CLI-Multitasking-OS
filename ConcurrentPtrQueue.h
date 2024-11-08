@@ -8,6 +8,7 @@ class ConcurrentPtrQueue {
 public:
     void push(std::shared_ptr<T> item);
     std::shared_ptr<T> try_pop();
+    std::shared_ptr<T> peek_front();
 private:
     std::mutex queue_mutex;
     std::queue<std::shared_ptr<T>> queue;

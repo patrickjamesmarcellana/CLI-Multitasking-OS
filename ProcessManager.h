@@ -13,7 +13,8 @@ public:
 	typedef std::unordered_map<std::string, std::shared_ptr<Process>>& ProcessMap;
 	typedef std::shared_ptr<ConcurrentPtrQueue<Process>>& ProcessQueue;
 
-	ProcessManager(ProcessMap process_map, std::shared_mutex& process_map_lock, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq);
+	ProcessManager(ProcessMap process_map, std::shared_mutex& process_map_lock, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq,
+				   long long int min_mem_per_proc, long long int max_mem_per_proc);
 	~ProcessManager() = default;
 
 	std::shared_ptr<Process> save_process(std::string process_name);
@@ -23,7 +24,8 @@ public:
 	bool is_generating_processes();
 	void scheduler_test_thread();
 	void scheduler_test_thread_stop();
-	void update_configuration(long long int min_ins, long long int max_ins, long long int batch_process_freq);
+	void update_configuration(long long int min_ins, long long int max_ins, long long int batch_process_freq, long long int min_mem_per_proc, long long int max_mem_per_proc);
+	long long int generate_random_memory_req();
 
 private:
 	class ProcessGenerator : public Worker {
@@ -47,6 +49,8 @@ private:
 	long long int min_ins;
 	long long int max_ins;
 	long long int batch_process_freq;
+	long long int min_mem_per_proc;
+	long long int max_mem_per_proc;
 
 	// prevent both changes to the pointers stored in the process map and changes to the individual process
 	// used when printing out process map
