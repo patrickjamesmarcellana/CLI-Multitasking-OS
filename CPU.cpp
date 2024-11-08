@@ -42,12 +42,7 @@ void CPU::loop() {
             //}
         }
 
-        //sleep(100ms);
-        cpu_usage.setActive();
-    } else {
-        // todo: do not set every cycle
-        cpu_usage.setIdle();
-    }
+    } 
 
     this->inc_cpu_counter();
 }
