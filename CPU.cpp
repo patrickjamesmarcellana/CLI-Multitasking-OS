@@ -24,25 +24,7 @@ void CPU::loop() {
 
     this->handle_finished_processes();   // for processes that are either done executing or used up quantum slices
     this->handle_reception_of_process(); 
-
-    if (active_process && active_process->getCurrLine() < active_process->getTotalLines()) {
-        if(this->process_cpu_counter % (this->delay_per_exec + 1) == 0)
-        {
-            this->process_cpu_counter = 0;
-            // get the command from the command list that is parallel to the current line of instruction, then execute it by passing the core ID
-            auto time_executed = std::chrono::system_clock::now();
-            active_process->set_time_executed(time_executed);
-            active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
-            active_process->incCurrLine();
-
-            //if(active_process->getCurrLine() > active_process->getTotalLines()) // check if incrementing curr line ends the process
-            //{
-            //    this->is_busy = false;
-
-            //}
-        }
-
-    } 
+    this->handle_execution_of_process();
 
     this->inc_cpu_counter();
 }
@@ -118,6 +100,23 @@ void CPU::handle_reception_of_process()
             this->active_process->set_assigned_core_id(this->id);
             this->active_process_time_slice_expiry = this->active_process->getCurrLine() + this->quantum_cycles;
         }
+    }
+}
+
+void CPU::handle_execution_of_process()
+{
+    if (active_process && active_process->getCurrLine() < active_process->getTotalLines()) {
+        if (this->process_cpu_counter % (this->delay_per_exec + 1) == 0)
+        {
+            this->process_cpu_counter = 0;
+
+            // get the command from the command list that is parallel to the current line of instruction, then execute it by passing the core ID
+            auto time_executed = std::chrono::system_clock::now();
+            active_process->set_time_executed(time_executed);
+            active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
+            active_process->incCurrLine();
+        }
+
     }
 }
 

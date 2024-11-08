@@ -30,6 +30,7 @@ public:
 
     void handle_finished_processes();
     void handle_reception_of_process();
+    void handle_execution_of_process();
     void deallocate_memory_of_active_process();
 
 private:
