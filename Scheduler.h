@@ -29,5 +29,5 @@ private:
 	std::shared_mutex& process_map_lock;
 	long long int quantum_cycles;
 	long long int delay_per_exec;
-	FlatMemoryAllocator flat_memory_allocator;
+	FlatMemoryAllocator& flat_memory_allocator;
 };
