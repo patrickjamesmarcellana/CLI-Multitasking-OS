@@ -50,7 +50,7 @@ void* CPU::try_allocating_memory_for_new_process()
 
     // try looking for memory space
     void* memory = nullptr;
-    if (!process_in_front)
+    if (process_in_front)
     {
         memory = this->flat_memory_allocator.allocate(process_in_front->get_memory_required(), process_in_front->getId());
     }
@@ -69,17 +69,19 @@ void CPU::handle_finished_processes()
 
         if (active_process->getCurrLine() >= active_process->getTotalLines()) // if current process finishes executing
         {
+            this->deallocate_memory_of_active_process();
             this->active_process = nullptr;
             this->is_busy = false;
-            this->deallocate_memory_of_active_process();
+            this->flat_memory_allocator.dec_processes_in_memory();
         }
         else if (algorithm == RR && active_process->getCurrLine() >= this->active_process_time_slice_expiry) // if time slice is used up when the algorithm is RR
         {
             this->active_process->set_assigned_core_id(-1);
             process_queue->push(this->active_process);
+            this->deallocate_memory_of_active_process();
             this->active_process = nullptr;
             this->is_busy = false;
-            this->deallocate_memory_of_active_process();
+            this->flat_memory_allocator.dec_processes_in_memory();
         }
     }
 }
@@ -88,7 +90,8 @@ void CPU::handle_reception_of_process()
 {
     if (!active_process) {
 
-        if (void* memory = this->try_allocating_memory_for_new_process(); memory == nullptr)
+        void* memory = this->try_allocating_memory_for_new_process();
+        if (!memory)
         {
             this->active_process = nullptr;
         }
@@ -96,6 +99,7 @@ void CPU::handle_reception_of_process()
         {
             this->active_process = this->process_queue->try_pop();
             this->active_process->set_memory_address(memory);
+            this->flat_memory_allocator.inc_processes_in_memory();
         }
 
         if (active_process) // if CPU finally gets assigned a process

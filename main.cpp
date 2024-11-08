@@ -262,6 +262,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"initialize", [](auto) {
             os_config::loadConfig("config.txt");
         	os_config::printConfig();
+            global_objects::flat_memory_allocator = FlatMemoryAllocator(os_config::max_overall_mem, FlatMemoryAllocator::FIRST_FIT);
             global_objects::process_manager.update_configuration(os_config::min_ins, os_config::max_ins, os_config::batch_process_freq, os_config::min_mem_per_proc, os_config::max_mem_per_proc);
             global_objects::scheduler = std::make_unique<Scheduler>(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, global_objects::process_map_lock, os_config::quantum_cycles, os_config::delays_per_exec,
 																	global_objects::flat_memory_allocator);
@@ -287,6 +288,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"report-util", [](auto) {
             std::ofstream stream("csopesy-log.txt", std::ios::trunc);
             dump_state_to_stream(stream);
+            global_objects::flat_memory_allocator.visualize_memory();
         }},
     };
 }

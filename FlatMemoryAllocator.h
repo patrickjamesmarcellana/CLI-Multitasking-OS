@@ -2,6 +2,9 @@
 #include <unordered_map>
 #include <vector>
 #include <algorithm>
+#include <chrono>
+#include <iostream>
+#include <fstream>
 
 #include "IMemoryAllocator.h"
 
@@ -19,18 +22,25 @@ public:
 
 	void* allocate(size_t size, int process_id) override;
 	void deallocate(void* ptr, size_t size) override;
-	std::string visualize_memory() override;
+	void visualize_memory() override;
+	void dec_processes_in_memory();
+	void inc_processes_in_memory();
 
 private:
 	size_t maximum_size;
 	size_t allocated_size;
 	std::vector<int> memory;
-	std::vector<bool> allocation_map;
+	std::unordered_map<size_t, bool> allocation_map;
 	Primary_Fit_Approach fit_approach;
+	int processes_in_memory;
 
 	void initialize_memory();
 	bool can_allocate_at(size_t index, size_t size);
 	void allocate_at(size_t index, size_t size, int process_id);
 	void deallocate_at(size_t index, size_t size);
+
+	void dump_memory_state_to_stream(std::ostream& stream);
+	std::string format_time(const std::chrono::time_point<std::chrono::system_clock>& time_executed);
+	size_t compute_total_external_fragmentation();
 };
 
