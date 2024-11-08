@@ -27,8 +27,7 @@ void CPU::loop() {
         {
             this->active_process = nullptr;
 
-            // deallocate memory
-            this->flat_memory_allocator.deallocate(this->active_process->get_memory_address(), this->active_process->get_memory_required());
+            this->deallocate_memory_of_active_process();
         }
         else if (algorithm == RR && active_process->getCurrLine() >= this->active_process_time_slice_expiry) // otherwise, check if its time slice is expired (if RR)
         {
@@ -36,6 +35,8 @@ void CPU::loop() {
             this->active_process->set_assigned_core_id(-1);
             process_queue->push(this->active_process);
             this->active_process = nullptr;
+
+            this->deallocate_memory_of_active_process();
         }
     }
 
@@ -106,3 +107,9 @@ void CPU::inc_cpu_counter()
 float CPU::get_cpu_usage() {
     return this->cpu_usage.getUsage();
 }
+
+void CPU::deallocate_memory_of_active_process()
+{
+    this->flat_memory_allocator.deallocate(this->active_process->get_memory_address(), this->active_process->get_memory_required());
+}
+
