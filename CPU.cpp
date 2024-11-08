@@ -86,24 +86,32 @@ void CPU::handle_finished_processes()
     }
 }
 
+void* CPU::get_process_from_queue()
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    void* memory = this->try_allocating_memory_for_new_process();
+    if (memory == nullptr)
+    {
+        this->active_process = nullptr;
+    }
+    else
+    {
+        this->active_process = this->process_queue->try_pop();
+    }
+
+    return memory;
+}
+
 void CPU::handle_reception_of_process()
 {
     if (!active_process) {
+        void* memory = this->get_process_from_queue();
 
-        void* memory = this->try_allocating_memory_for_new_process();
-        if (!memory)
-        {
-            this->active_process = nullptr;
-        }
-        else
-        {
-            this->active_process = this->process_queue->try_pop();
-            this->active_process->set_memory_address(memory);
-            this->flat_memory_allocator.inc_processes_in_memory();
-        }
 
         if (active_process) // if CPU finally gets assigned a process
         {
+            this->active_process->set_memory_address(memory);
+            this->flat_memory_allocator.inc_processes_in_memory();
             this->is_busy = true;
             this->process_cpu_counter = 0LL;
             this->active_process->set_assigned_core_id(this->id);

@@ -33,6 +33,7 @@ public:
 
     void* try_allocating_memory_for_new_process();
     void deallocate_memory_of_active_process();
+    void* get_process_from_queue();
 
 private:
     int id;
@@ -47,6 +48,7 @@ private:
     long long int process_cpu_counter = 0;
     long long int active_process_time_slice_expiry;
     FlatMemoryAllocator& flat_memory_allocator;
+    std::mutex mtx;
     
     CPUTracker cpu_usage;
 };
