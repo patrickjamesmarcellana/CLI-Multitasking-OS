@@ -22,35 +22,8 @@ void CPU::loop() {
     // prevents screen -ls/report-util from running until all CPUs release this
     std::shared_lock prevent_lock_entire_process_map(process_map_lock);
 
-    this->handle_finished_processes();
-
-
-
-    if (!active_process || active_process->getCurrLine() >= active_process->getTotalLines()) {
-        this->is_busy = false;
-
-        // try looking for memory space 
-        void* memory = this->flat_memory_allocator.allocate(this->process_queue->peek_front()->get_memory_required());
-        if (memory == nullptr)
-        {
-            this->active_process = nullptr;
-        }
-        else
-        {
-            this->active_process = this->process_queue->try_pop();
-            this->active_process->set_memory_address(memory);
-        }
-
-        //active_process = this->process_queue->try_pop();
-
-        if(active_process) // if CPU finally gets assigned a process
-        {
-            this->is_busy = true;
-            this->process_cpu_counter = 0LL;
-            this->active_process->set_assigned_core_id(this->id);
-            this->active_process_time_slice_expiry = this->active_process->getCurrLine() + this->quantum_cycles;
-        }
-    }
+    this->handle_finished_processes();   // for processes that are either done executing or used up quantum slices
+    this->handle_reception_of_process(); 
 
     if (active_process && active_process->getCurrLine() < active_process->getTotalLines()) {
         if(this->process_cpu_counter % (this->delay_per_exec + 1) == 0)
@@ -119,4 +92,34 @@ void CPU::handle_finished_processes()
         }
     }
 }
+
+void CPU::handle_reception_of_process()
+{
+    if (!active_process || active_process->getCurrLine() >= active_process->getTotalLines()) {
+        this->is_busy = false;
+
+        // try looking for memory space 
+        void* memory = this->flat_memory_allocator.allocate(this->process_queue->peek_front()->get_memory_required());
+        if (memory == nullptr)
+        {
+            this->active_process = nullptr;
+        }
+        else
+        {
+            this->active_process = this->process_queue->try_pop();
+            this->active_process->set_memory_address(memory);
+        }
+
+        //active_process = this->process_queue->try_pop();
+
+        if (active_process) // if CPU finally gets assigned a process
+        {
+            this->is_busy = true;
+            this->process_cpu_counter = 0LL;
+            this->active_process->set_assigned_core_id(this->id);
+            this->active_process_time_slice_expiry = this->active_process->getCurrLine() + this->quantum_cycles;
+        }
+    }
+}
+
 
