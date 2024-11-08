@@ -52,7 +52,7 @@ void* CPU::try_allocating_memory_for_new_process()
     void* memory = nullptr;
     if (!process_in_front)
     {
-        memory = this->flat_memory_allocator.allocate(process_in_front->get_memory_required());
+        memory = this->flat_memory_allocator.allocate(process_in_front->get_memory_required(), process_in_front->getId());
     }
 
     return memory;

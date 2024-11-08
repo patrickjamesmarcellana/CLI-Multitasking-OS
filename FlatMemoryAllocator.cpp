@@ -1,9 +1,10 @@
 #include "FlatMemoryAllocator.h"
 
-FlatMemoryAllocator::FlatMemoryAllocator(size_t maximum_size, Primary_Fit_Approach fit_approach) : maximum_size(maximum_size), allocated_size(0), fit_approach(fit_approach)
+FlatMemoryAllocator::FlatMemoryAllocator(size_t maximum_size, Primary_Fit_Approach fit_approach) :
+maximum_size(maximum_size),
+allocated_size(0),
+fit_approach(fit_approach)
 {
-	memory = std::vector<char>(maximum_size, '.');
-	allocation_map = std::vector<bool>(maximum_size, false);
 	initialize_memory();
 }
 
@@ -12,15 +13,15 @@ FlatMemoryAllocator::~FlatMemoryAllocator()
 	memory.clear();
 }
 
-void* FlatMemoryAllocator::allocate(size_t size)
+void* FlatMemoryAllocator::allocate(size_t size, int process_id)
 {
-	if(fit_approach == FIRST_FIT)
+	if(this->fit_approach == FIRST_FIT)
 	{
-		for(size_t index = 0; index < maximum_size - size + 1; ++index)
+		for(size_t index = 0; index < this->maximum_size - size + 1; ++index)
 		{
 			if(!allocation_map[index] && can_allocate_at(index, size))
 			{
-				allocate_at(index, size);
+				allocate_at(index, size, process_id);
 				return &memory[index];
 			}
 		}
@@ -33,7 +34,7 @@ void* FlatMemoryAllocator::allocate(size_t size)
 
 void FlatMemoryAllocator::deallocate(void* ptr, size_t size)
 {
-	size_t index = static_cast<char*>(ptr) - &memory[0];
+	size_t index = static_cast<int*>(ptr) - &memory[0];
 	if(allocation_map[index])
 	{
 		deallocate_at(index, size);
@@ -63,8 +64,11 @@ std::string FlatMemoryAllocator::visualize_memory()
 
 void FlatMemoryAllocator::initialize_memory()
 {
-	std::fill(memory.begin(), memory.end(), '.');
-	std::fill(allocation_map.begin(), allocation_map.end(), false);
+	memory = std::vector<int>(maximum_size, -1); // -1 means unused
+	for(size_t index = 0; index < maximum_size; ++index)
+	{
+		allocation_map[index] = false;
+	}
 }
 
 bool FlatMemoryAllocator::can_allocate_at(size_t index, size_t size)
@@ -72,14 +76,22 @@ bool FlatMemoryAllocator::can_allocate_at(size_t index, size_t size)
 	return (index + size <= maximum_size);
 }
 
-void FlatMemoryAllocator::allocate_at(size_t index, size_t size)
+void FlatMemoryAllocator::allocate_at(size_t index, size_t size, int process_id)
 {
-	std::fill(std::next(allocation_map.begin(), index), std::next(allocation_map.begin(), (index + size)), true);
-	allocated_size += size;
+	for(int i = index; i < index + size; i++)
+	{
+		this->allocation_map[i] = true;
+		this->memory[i] = process_id;
+	}
+	this->allocated_size += size;
 }
 
 void FlatMemoryAllocator::deallocate_at(size_t index, size_t size)
 {
-	std::fill(std::next(allocation_map.begin(), index), std::next(allocation_map.begin(), (index + size)), false);
+	for (int i = index; i < index + size; i++)
+	{
+		this->allocation_map[i] = false;
+		this->memory[i] = -1;
+	}
 	allocated_size -= size;
 }
