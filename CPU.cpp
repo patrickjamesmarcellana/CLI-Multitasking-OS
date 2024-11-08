@@ -22,7 +22,7 @@ void CPU::loop() {
     // prevents screen -ls/report-util from running until all CPUs release this
     std::shared_lock prevent_lock_entire_process_map(process_map_lock);
 
-    this->handle_finished_processes();   // for processes that are either done executing or used up quantum slices
+    this->handle_finished_processes();  
     this->handle_reception_of_process(); 
     this->handle_execution_of_process();
 
