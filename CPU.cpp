@@ -96,21 +96,25 @@ void CPU::handle_finished_processes()
 void CPU::handle_reception_of_process()
 {
     if (!active_process) {
-        
 
-        // try looking for memory space 
-        void* memory = this->flat_memory_allocator.allocate(this->process_queue->peek_front()->get_memory_required());
-        if (memory == nullptr)
+        std::shared_ptr<Process> process_in_front = this->process_queue->peek_front();
+
+        // try looking for memory space
+        void* memory = nullptr;
+        if(!process_in_front)
+        {
+             memory = this->flat_memory_allocator.allocate(process_in_front->get_memory_required());
+        }
+
+        if (memory == nullptr) // no memory space available
         {
             this->active_process = nullptr;
         }
-        else
+        else // memory space successfully allocated
         {
             this->active_process = this->process_queue->try_pop();
             this->active_process->set_memory_address(memory);
         }
-
-        //active_process = this->process_queue->try_pop();
 
         if (active_process) // if CPU finally gets assigned a process
         {
