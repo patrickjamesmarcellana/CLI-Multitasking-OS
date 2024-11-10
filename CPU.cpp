@@ -88,7 +88,6 @@ void CPU::handle_finished_processes()
 
 void* CPU::get_process_from_queue()
 {
-    std::lock_guard<std::mutex> lock(mtx);
     void* memory = this->try_allocating_memory_for_new_process();
     if (memory == nullptr)
     {

@@ -16,6 +16,7 @@ FlatMemoryAllocator::~FlatMemoryAllocator()
 
 void* FlatMemoryAllocator::allocate(size_t size, int process_id)
 {
+	std::lock_guard<std::mutex> lock(mtx);
 	if(this->fit_approach == FIRST_FIT)
 	{
 		for(size_t index = 0; index < this->maximum_size - size + 1; ++index)
@@ -35,6 +36,7 @@ void* FlatMemoryAllocator::allocate(size_t size, int process_id)
 
 void FlatMemoryAllocator::deallocate(void* ptr, size_t size)
 {
+	std::lock_guard<std::mutex> lock(mtx);
 	size_t index = static_cast<int*>(ptr) - &memory[0];
 	if(allocation_map[index])
 	{
@@ -43,6 +45,7 @@ void FlatMemoryAllocator::deallocate(void* ptr, size_t size)
 }
 
 void FlatMemoryAllocator::dump_memory_state_to_stream(std::ostream& stream) {
+	std::lock_guard<std::mutex> lock(mtx);
 	stream << "Timestamp: " << this->format_time(std::chrono::system_clock::now()) << std::endl;
 	stream << "Number of processes in memory: " << this->processes_in_memory << std::endl;
 	stream << "Total External Fragmentation: " << this->compute_total_external_fragmentation() << std::endl;

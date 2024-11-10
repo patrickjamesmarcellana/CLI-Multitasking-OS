@@ -5,6 +5,7 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <mutex>
 
 #include "IMemoryAllocator.h"
 
@@ -42,5 +43,7 @@ private:
 	void dump_memory_state_to_stream(std::ostream& stream);
 	std::string format_time(const std::chrono::time_point<std::chrono::system_clock>& time_executed);
 	size_t compute_total_external_fragmentation();
+
+	std::mutex mtx;
 };
 

@@ -48,7 +48,6 @@ private:
     long long int process_cpu_counter = 0;
     long long int active_process_time_slice_expiry;
     FlatMemoryAllocator& flat_memory_allocator;
-    std::mutex mtx;
     
     CPUTracker cpu_usage;
 };
