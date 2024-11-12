@@ -70,9 +70,9 @@ void FlatMemoryAllocator::dump_memory_state_to_stream(std::ostream& stream) {
 }
 
 
-void FlatMemoryAllocator::visualize_memory()
+void FlatMemoryAllocator::visualize_memory(int current_cycle)
 {
-	std::ofstream stream("memory-log.txt", std::ios::trunc);
+	std::ofstream stream("memory_stamp_" + std::to_string(current_cycle) + ".txt", std::ios::trunc);
 	this->dump_memory_state_to_stream(stream);
 }
 

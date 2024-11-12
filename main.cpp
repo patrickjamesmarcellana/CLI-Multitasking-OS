@@ -68,7 +68,7 @@ namespace os_config
                 else if (key == "max-ins") {
                     max_ins = std::stoll(value);
                 }
-                else if (key == "delays-per-exec") {
+                else if (key == "delays-per-exec" || key == "delay-per-exec") {
                     delays_per_exec = std::stoll(value);
                 }
             	else if (key == "max-overall-mem")
@@ -292,7 +292,6 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"report-util", [](auto) {
             std::ofstream stream("csopesy-log.txt", std::ios::trunc);
             dump_state_to_stream(stream);
-            global_objects::flat_memory_allocator->visualize_memory();
         }},
     };
 }
