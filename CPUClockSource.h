@@ -6,13 +6,15 @@
 
 class CPUSemaphores {
 public:
+    CPUSemaphores(bool initialState) : enabled(initialState) {};
+    CPUSemaphores() : enabled(true) {};
     void waitUntilCycleStart() {
-        cpuCanStartSem.acquire();
+        if(enabled) cpuCanStartSem.acquire();
     }
     void notifyDone() {
-        cpuFinishedSem.release();
+        if (enabled) cpuFinishedSem.release();
     }
-    bool enabled = false;
+    bool enabled;
 private:
     friend class CPUClockSource;
     std::binary_semaphore cpuCanStartSem{ 1 }, cpuFinishedSem{ 0 };
@@ -21,7 +23,7 @@ private:
 class CPUClockSource {
 public:
     // TODO: not hardcoded cpu limit
-    CPUClockSource() : cpuSemaphores(8), clockThread(&CPUClockSource::clockThreadFunc, this) {};
+    CPUClockSource() : cpuSemaphores(8), processManagerSemaphores(false /* disabled initially */), clockThread(&CPUClockSource::clockThreadFunc, this) {};
     ~CPUClockSource() {
         clockThreadEnabled = false;
         clockThread.join();
@@ -37,6 +39,24 @@ public:
         // which causes a deadlock when the cpu thread is already stopped (never going to finish again)
         shutdownMode = true;
     }
+    void togglePMThread(bool enabled) {
+        std::lock_guard loopLock(lock);
+
+        this->processManagerSemaphores.enabled = enabled;
+        if (enabled) {
+            // reset to (cpuCanStartSem = 1, cpuFinishedSem = 0)
+            while (this->processManagerSemaphores.cpuCanStartSem.try_acquire());
+            this->processManagerSemaphores.cpuCanStartSem.release();
+
+            while (this->processManagerSemaphores.cpuFinishedSem.try_acquire());
+        }
+        else {
+            // HACK: process generator can get stuck waiting for this semaphore if it was already waiting before the semaphore was disabled
+            // after getting unstuck, it should not get stuck again as the semaphore is now disabled
+            processManagerSemaphores.cpuCanStartSem.release();
+        }
+    }
+
     CPUSemaphores& getSemaphores(int cpuId) {
         return cpuSemaphores[cpuId];
     }
@@ -55,7 +75,7 @@ private:
                 for (int i = 0; i < cpuCount; i++) {
                     cpuSemaphores[i].cpuFinishedSem.acquire();
                 }
-                if (processManagerSemaphores.enabled) {
+                if (this->processManagerSemaphores.enabled) {
                     processManagerSemaphores.cpuFinishedSem.acquire();
                 }
             }
@@ -67,7 +87,9 @@ private:
             for (int i = 0; i < cpuCount; i++) {
                 cpuSemaphores[i].cpuCanStartSem.release();
             }
-            processManagerSemaphores.cpuCanStartSem.release();
+            if (this->processManagerSemaphores.enabled) {
+                processManagerSemaphores.cpuCanStartSem.release();
+            }
         }
     }
     int cpuCount = 0;

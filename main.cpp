@@ -285,6 +285,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
                 return;
             }
             
+            global_objects::clock_source.togglePMThread(true);
             global_objects::process_manager.scheduler_test_thread();
         }},
         {"scheduler-stop", [](auto) {
@@ -293,6 +294,8 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
                 return;
             }
             
+            global_objects::clock_source.togglePMThread(false);
+            // it will now be running without syncing to cpu threads, but that's okay as we are stopping it anyway
             global_objects::process_manager.scheduler_test_thread_stop();
         }},
         {"report-util", [](auto) {
