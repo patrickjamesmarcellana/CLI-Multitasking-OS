@@ -8,6 +8,8 @@
 #include <mutex>
 
 #include "IMemoryAllocator.h"
+#include <set>
+#include <map>
 
 class FlatMemoryAllocator : public IMemoryAllocator
 {
@@ -16,18 +18,27 @@ public:
 	{
 		FIRST_FIT
 	};
-
-
 	FlatMemoryAllocator(size_t maximum_size, Primary_Fit_Approach fit_approach);
 	~FlatMemoryAllocator();
 
-	void* allocate(size_t size, int process_id) override;
+	void* allocate(size_t size, std::string process_name) override;
 	void deallocate(void* ptr, size_t size) override;
 	void visualize_memory() override;
 	void dec_processes_in_memory();
 	void inc_processes_in_memory();
 
 private:
+	class FlatMemoryAllocInfo {
+	public:
+		std::string name;
+		size_t relocation; // phy addr of virtual memory location 0
+		size_t size;
+		bool operator<(FlatMemoryAllocInfo& other) {
+			return this->relocation < other.relocation;
+		}
+	};
+	std::map<size_t, FlatMemoryAllocInfo> allocations;
+
 	size_t maximum_size;
 	size_t allocated_size;
 	std::vector<int> memory;
@@ -37,7 +48,7 @@ private:
 
 	void initialize_memory();
 	bool can_allocate_at(size_t index, size_t size);
-	void allocate_at(size_t index, size_t size, int process_id);
+	void allocate_at(size_t index, size_t size, std::string& process_name);
 	void deallocate_at(size_t index, size_t size);
 
 	void dump_memory_state_to_stream(std::ostream& stream);

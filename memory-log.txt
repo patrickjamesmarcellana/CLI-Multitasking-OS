@@ -1,8 +1,25 @@
-Timestamp: (11/10/2024 11:00:13PM)
-Number of processes in memory: 45
-Total External Fragmentation: 16263
+Timestamp: (11/12/2024 04:23:06PM)
+Number of processes in memory: 4
+Total External Fragmentation: 384
 
 ----end---- = 16384
+
+16000
+process_2171
+12000
+
+12000
+process_55462
+8000
+
+8000
+process_15776
+4000
+
+4000
+process_17910
+0
+
 
 ----start---- = 0
 

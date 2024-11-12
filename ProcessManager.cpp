@@ -18,12 +18,19 @@ max_mem_per_proc(max_mem_per_proc)
 
 std::shared_ptr<Process> ProcessManager::save_process(std::string process_name)
 {
+	//std::cout << "Saving process\n";
+	//std::cout << "Wait for process map\n";
 	std::shared_lock prevent_lock_entire(entire_process_map_lock);
 	std::unique_lock lock_to_write(fine_grain_process_map_rw_lock);
 	long long int total_lines = generate_random_total_lines();
 	std::shared_ptr<Process> new_process = std::make_shared<Process>(this->process_map.size(), process_name, total_lines, this->generate_random_memory_req());
-	this->process_map[process_name] = new_process;
+	//std::cout << "process obj create done\n";
+	{
+		
+		this->process_map[process_name] = new_process;
+	}
 	this->process_queue->push(new_process);
+	//std::cout << "Saved process\n";
 	return new_process;
 }
 

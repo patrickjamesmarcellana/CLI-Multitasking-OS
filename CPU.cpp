@@ -44,18 +44,18 @@ float CPU::get_cpu_usage() {
     return this->cpu_usage.getUsage();
 }
 
-void* CPU::try_allocating_memory_for_new_process()
+void* CPU::try_allocating_memory_for_new_process(std::shared_ptr<Process> process)
 {
-    std::shared_ptr<Process> process_in_front = this->process_queue->peek_front();
-
     // try looking for memory space
     void* memory = nullptr;
-    if (process_in_front)
+    if (process)
     {
-        memory = this->flat_memory_allocator.allocate(process_in_front->get_memory_required(), process_in_front->getId());
+        memory = this->flat_memory_allocator.allocate(process->get_memory_required(), process->getProcessName());
+        if (memory != nullptr) {
+            return memory;
+        }
     }
-
-    return memory;
+    return nullptr;
 }
 
 void CPU::deallocate_memory_of_active_process()
@@ -78,39 +78,53 @@ void CPU::handle_finished_processes()
         {
             this->active_process->set_assigned_core_id(-1);
             process_queue->push(this->active_process);
-            this->deallocate_memory_of_active_process();
+            //this->deallocate_memory_of_active_process();
             this->active_process = nullptr;
             this->is_busy = false;
-            this->flat_memory_allocator.dec_processes_in_memory();
+            //this->flat_memory_allocator.dec_processes_in_memory();
         }
     }
 }
 
-void* CPU::get_process_from_queue()
+std::shared_ptr<Process> CPU::get_process_from_queue()
 {
-    void* memory = this->try_allocating_memory_for_new_process();
-    if (memory == nullptr)
+    std::shared_ptr<Process> process_in_front = this->process_queue->try_pop();
+    if (process_in_front)
     {
-        this->active_process = nullptr;
-    }
-    else
-    {
-        this->active_process = this->process_queue->try_pop();
-    }
+        if (process_in_front->get_memory_address() == nullptr) {
+            void *memory = this->try_allocating_memory_for_new_process(process_in_front);
+            if (memory == nullptr)
+            {
+                // go back to queue
+                this->process_queue->push(process_in_front);
+                return nullptr;
+            }
+            else
+            {
+                // let's roll
+                process_in_front->set_memory_address(memory);
+                this->flat_memory_allocator.inc_processes_in_memory();
+                return process_in_front;
+            }
+        }
+        else 
+        {
+            // no allocation needed (e.g. round robin process returns after pre-emption)
+            return process_in_front;
+        }
 
-    return memory;
+    }
+    return nullptr;
 }
 
 void CPU::handle_reception_of_process()
 {
     if (!active_process) {
-        void* memory = this->get_process_from_queue();
+        active_process = this->get_process_from_queue();
 
 
         if (active_process) // if CPU finally gets assigned a process
         {
-            this->active_process->set_memory_address(memory);
-            this->flat_memory_allocator.inc_processes_in_memory();
             this->is_busy = true;
             this->process_cpu_counter = 0LL;
             this->active_process->set_assigned_core_id(this->id);
@@ -129,7 +143,7 @@ void CPU::handle_execution_of_process()
             // get the command from the command list that is parallel to the current line of instruction, then execute it by passing the core ID
             auto time_executed = std::chrono::system_clock::now();
             active_process->set_time_executed(time_executed);
-            active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
+            //active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
             active_process->incCurrLine();
         }
 

@@ -87,6 +87,10 @@ namespace os_config
                 {
                     max_mem_per_proc = std::stoll(value);
                 }
+                else if (key == "mem-per-proc")
+                {
+                    min_mem_per_proc = max_mem_per_proc = std::stoll(value);
+                }
             }
             file.close();
         }

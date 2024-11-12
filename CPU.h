@@ -31,9 +31,9 @@ public:
     void handle_reception_of_process();
     void handle_execution_of_process();
 
-    void* try_allocating_memory_for_new_process();
+    void* try_allocating_memory_for_new_process(std::shared_ptr<Process> process);
     void deallocate_memory_of_active_process();
-    void* get_process_from_queue();
+    std::shared_ptr<Process> get_process_from_queue();
 
 private:
     int id;

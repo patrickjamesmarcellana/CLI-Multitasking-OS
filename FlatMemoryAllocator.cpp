@@ -14,18 +14,26 @@ FlatMemoryAllocator::~FlatMemoryAllocator()
 	memory.clear();
 }
 
-void* FlatMemoryAllocator::allocate(size_t size, int process_id)
+void* FlatMemoryAllocator::allocate(size_t size, std::string process_name)
 {
 	std::lock_guard<std::mutex> lock(mtx);
 	if(this->fit_approach == FIRST_FIT)
 	{
-		for(size_t index = 0; index < this->maximum_size - size + 1; ++index)
-		{
-			if(!allocation_map[index] && can_allocate_at(index, size))
-			{
-				allocate_at(index, size, process_id);
-				return &memory[index];
+		size_t prev_end = 0; // it is the next index that is not reserved by the previous allocation
+		for (auto& [_, allocation] : allocations) { // allocations are sorted by addresses
+			size_t hole_size = allocation.relocation - prev_end;
+			if (hole_size >= size) {
+				allocate_at(prev_end, size, process_name);
+				return &memory[prev_end];
 			}
+			prev_end = allocation.relocation + allocation.size;
+		}
+
+		// check remaining space to the right of allocations
+		size_t hole_size = maximum_size - prev_end;
+		if (hole_size >= size) {
+			allocate_at(prev_end, size, process_name);
+			return &memory[prev_end];
 		}
 
 		return nullptr;
@@ -37,11 +45,8 @@ void* FlatMemoryAllocator::allocate(size_t size, int process_id)
 void FlatMemoryAllocator::deallocate(void* ptr, size_t size)
 {
 	std::lock_guard<std::mutex> lock(mtx);
-	size_t index = static_cast<int*>(ptr) - &memory[0];
-	if(allocation_map[index])
-	{
-		deallocate_at(index, size);
-	}
+	size_t index = static_cast<int*>(ptr) - &memory[0]; // sidenote: this is dangerous because the vector can change address at any given time
+	deallocate_at(index, size);
 }
 
 void FlatMemoryAllocator::dump_memory_state_to_stream(std::ostream& stream) {
@@ -49,8 +54,15 @@ void FlatMemoryAllocator::dump_memory_state_to_stream(std::ostream& stream) {
 	stream << "Timestamp: " << this->format_time(std::chrono::system_clock::now()) << std::endl;
 	stream << "Number of processes in memory: " << this->processes_in_memory << std::endl;
 	stream << "Total External Fragmentation: " << this->compute_total_external_fragmentation() << std::endl;
-	stream << "\n" << "----end---- = " << this->maximum_size << std::endl;
+	stream << "\n" << "----end---- = " << this->maximum_size << std::endl << std::endl;
 
+	for (auto process_it = this->allocations.crbegin(); process_it != this->allocations.crend(); ++process_it) {
+		auto& alloc_info = process_it->second;
+		stream << alloc_info.relocation + alloc_info.size << std::endl;
+		stream << alloc_info.name << std::endl;
+		stream << alloc_info.relocation << std::endl;
+		stream << std::endl;
+	}
 
 
 	stream << "\n" << "----start---- = 0" << std::endl;
@@ -66,12 +78,15 @@ void FlatMemoryAllocator::visualize_memory()
 
 void FlatMemoryAllocator::dec_processes_in_memory()
 {
+	std::lock_guard<std::mutex> lock(mtx); // TODO: replace with atomic int
 	this->processes_in_memory--;
 }
 
 void FlatMemoryAllocator::inc_processes_in_memory()
 {
+	std::lock_guard<std::mutex> lock(mtx);
 	this->processes_in_memory++;
+	//std::cout << std::to_string(this->processes_in_memory) + "\n";
 }
 
 void FlatMemoryAllocator::initialize_memory()
@@ -88,30 +103,27 @@ bool FlatMemoryAllocator::can_allocate_at(size_t index, size_t size)
 	return (index + size <= maximum_size);
 }
 
-void FlatMemoryAllocator::allocate_at(size_t index, size_t size, int process_id)
+void FlatMemoryAllocator::allocate_at(size_t index, size_t size, std::string& process_name)
 {
-	for(int i = index; i < index + size; i++)
-	{
-		if(i < maximum_size)
-		{
-			this->allocation_map[i] = true;
-			this->memory[i] = process_id;
-		}
-	}
+	FlatMemoryAllocInfo alloc;
+	alloc.relocation = index;
+	alloc.size = size;
+	alloc.name = process_name;
+	this->allocations[alloc.relocation] = alloc;
 	this->allocated_size += size;
 }
 
 void FlatMemoryAllocator::deallocate_at(size_t index, size_t size)
 {
-	for (int i = index; i < index + size; i++)
-	{
-		if(i < this->maximum_size)
-		{
-			this->allocation_map[i] = false;
-			this->memory[i] = -1;
-		}
+	auto allocation = this->allocations.find(index);
+	if (allocation != this->allocations.end()) {
+		allocated_size -= allocation->second.size;
+		this->allocations.erase(index);
 	}
-	allocated_size -= size;
+	else {
+		std::cout << "WARN: Could not find allocation starting at index " << index << std::endl;
+	}
+
 }
 
 std::string FlatMemoryAllocator::format_time(const std::chrono::time_point<std::chrono::system_clock>& time_executed) {
@@ -128,14 +140,5 @@ std::string FlatMemoryAllocator::format_time(const std::chrono::time_point<std::
 
 size_t FlatMemoryAllocator::compute_total_external_fragmentation()
 {
-	size_t external_fragmentation = 0;
-	for(int i = 0; i < maximum_size; i++)
-	{
-		if(this->allocation_map[i] == false)
-		{
-			external_fragmentation++;
-		}
-	}
-
-	return external_fragmentation;
+	return this->maximum_size - this->allocated_size;
 }

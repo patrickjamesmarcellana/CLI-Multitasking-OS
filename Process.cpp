@@ -8,12 +8,13 @@ Process::Process(int id, String processName, long long int totalLines, size_t me
 	totalLines(totalLines),
 	processName(processName),
 	arrivalTime(std::chrono::system_clock::now()),
-	memory_required(memory_required)
+	memory_required(memory_required),
+	memory_address(nullptr)
 {
-	for(int commandCnt = 0; commandCnt < totalLines; commandCnt++)
-	{
-		this->commandList.push_back(std::make_shared<PrintCommand>("Hello world from " + this->processName, this->processName));
-	}
+	//for(int commandCnt = 0; commandCnt < totalLines; commandCnt++)
+	//{
+	//	this->commandList.push_back(std::make_shared<PrintCommand>("Hello world from " + this->processName, this->processName));
+	//}
 }
 
 int Process::getId()
