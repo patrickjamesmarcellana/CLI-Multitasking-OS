@@ -6,19 +6,23 @@
 using namespace std::literals::chrono_literals;
 
 
-CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec, FlatMemoryAllocator& flat_memory_allocator) : Worker(),
+CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, CPUSemaphores& semaphores, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec, FlatMemoryAllocator& flat_memory_allocator) : Worker(),
 id(id),
 algorithm(algorithm),
 process_queue(process_queue),
 process_map_lock(process_map_lock),
 quantum_cycles(quantum_cycles),
 delay_per_exec(delay_per_exec),
+semaphores(semaphores),
 flat_memory_allocator(flat_memory_allocator)
 //time_created(std::chrono::system_clock::now())
 {
 }
 
 void CPU::loop() {
+    // synchronize start
+    semaphores.waitUntilCycleStart();
+
     // prevents screen -ls/report-util from running until all CPUs release this
     std::shared_lock prevent_lock_entire_process_map(process_map_lock);
 
@@ -31,6 +35,7 @@ void CPU::loop() {
     }
 
     this->inc_cpu_counter();
+    semaphores.notifyDone();
 }
 
 
@@ -80,6 +85,7 @@ void CPU::handle_finished_processes()
         }
         else if (algorithm == RR && active_process->getCurrLine() >= this->active_process_time_slice_expiry) // if time slice is used up when the algorithm is RR
         {
+            //std::cout << "evict proc\n";
             this->active_process->set_assigned_core_id(-1);
             process_queue->push(this->active_process);
             //this->deallocate_memory_of_active_process();
@@ -130,7 +136,7 @@ void CPU::handle_reception_of_process()
         if (active_process) // if CPU finally gets assigned a process
         {
             this->is_busy = true;
-            this->process_cpu_counter = 0LL;
+            //this->process_cpu_counter = 0LL;
             this->active_process->set_assigned_core_id(this->id);
             this->active_process_time_slice_expiry = this->active_process->getCurrLine() + this->quantum_cycles;
         }
@@ -142,7 +148,7 @@ void CPU::handle_execution_of_process()
     if (active_process && active_process->getCurrLine() < active_process->getTotalLines()) {
         if (this->process_cpu_counter % (this->delay_per_exec + 1) == 0)
         {
-            this->process_cpu_counter = 0;
+            //this->process_cpu_counter = 0;
 
             // get the command from the command list that is parallel to the current line of instruction, then execute it by passing the core ID
             auto time_executed = std::chrono::system_clock::now();

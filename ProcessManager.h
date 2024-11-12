@@ -13,9 +13,12 @@ public:
 	typedef std::unordered_map<std::string, std::shared_ptr<Process>>& ProcessMap;
 	typedef std::shared_ptr<ConcurrentPtrQueue<Process>>& ProcessQueue;
 
-	ProcessManager(ProcessMap process_map, std::shared_mutex& process_map_lock, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq,
+	ProcessManager(ProcessMap process_map, std::shared_mutex& process_map_lock, ProcessQueue process_queue, CPUClockSource& clock_source, long long int min_ins, long long int max_ins, long long int batch_process_freq,
 				   long long int min_mem_per_proc, long long int max_mem_per_proc);
-	~ProcessManager() = default;
+	~ProcessManager() {
+		// need to also disable semaphores
+		scheduler_test_thread_stop();
+	}
 
 	std::shared_ptr<Process> save_process(std::string process_name);
 	std::shared_ptr<Process> get_process(std::string process_name);
@@ -33,9 +36,12 @@ private:
 		ProcessGenerator(ProcessManager &pm, long long int& freq) : Worker(), freq(freq), pm(pm) {}
 	protected:
 		virtual void loop() {
+			pm.process_manager_semaphores.waitUntilCycleStart();
 			if(cpuCycle++ % freq == 0) {
+				//std::cout << "dump\n";
 				pm.save_process("process_" + std::to_string(pm.process_map.size()));
 			}
+			pm.process_manager_semaphores.notifyDone();
 		}
 	private:
 			long long int cpuCycle = 0;
@@ -58,5 +64,7 @@ private:
 
 	// prevent changes to the pointers stored in the process map, but allow changes to an indivudal process
 	std::shared_mutex fine_grain_process_map_rw_lock;
+
+	CPUSemaphores& process_manager_semaphores;
 };
 

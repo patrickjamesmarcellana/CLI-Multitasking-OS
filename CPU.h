@@ -2,6 +2,7 @@
 #include <memory>
 #include <queue>
 #include <shared_mutex>
+#include "CPUClockSource.h"
 #include "CPUUsageTracker.h"
 #include "ConcurrentPtrQueue.h"
 #include "FlatMemoryAllocator.h"
@@ -20,8 +21,8 @@ public:
         RR
     };
 
-    CPU(int id, Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec,
-        FlatMemoryAllocator& flat_memory_allocator);
+    CPU(int id, Algorithm algorithm, ProcessQueue process_queue, CPUSemaphores& semaphores, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec,
+         FlatMemoryAllocator& flat_memory_allocator);
     ~CPU() = default;
     bool get_is_busy();
     void inc_cpu_counter();
@@ -50,4 +51,5 @@ private:
     FlatMemoryAllocator& flat_memory_allocator;
     
     CPUTracker cpu_usage;
+    CPUSemaphores& semaphores;
 };

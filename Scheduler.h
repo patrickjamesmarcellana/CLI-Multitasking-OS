@@ -10,7 +10,7 @@ class Scheduler
 {
 public:
 	typedef std::shared_ptr<ConcurrentPtrQueue<Process>>& ProcessQueue;
-	Scheduler(int cores, CPU::Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, 
+	Scheduler(int cores, CPU::Algorithm algorithm, ProcessQueue process_queue, CPUClockSource& clock_source, std::shared_mutex& process_map_lock, long long int quantum_cycles,
 		long long int delay_per_exec, FlatMemoryAllocator& flat_memory_allocator);
 	~Scheduler() = default;
 
@@ -30,4 +30,5 @@ private:
 	long long int quantum_cycles;
 	long long int delay_per_exec;
 	FlatMemoryAllocator& flat_memory_allocator;
+	CPUClockSource& clock_source;
 };

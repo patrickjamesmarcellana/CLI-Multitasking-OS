@@ -124,7 +124,8 @@ namespace global_objects
     std::unordered_map<std::string, std::shared_ptr<Process>> process_map;
     std::shared_mutex process_map_lock;
     std::shared_ptr<ConcurrentPtrQueue<Process>> process_queue = std::make_shared<ConcurrentPtrQueue<Process>>();
-    ProcessManager process_manager = ProcessManager(process_map, process_map_lock, process_queue, os_config::min_ins, os_config::max_ins, os_config::batch_process_freq, os_config::min_mem_per_proc, os_config::max_mem_per_proc);
+    CPUClockSource clock_source;
+    ProcessManager process_manager = ProcessManager(process_map, process_map_lock, process_queue, clock_source, os_config::min_ins, os_config::max_ins, os_config::batch_process_freq, os_config::min_mem_per_proc, os_config::max_mem_per_proc);
     std::unique_ptr<FlatMemoryAllocator> flat_memory_allocator; // temporarily wrap in unique_ptr because we cannot copy/move objects containing a mutex
 
     std::unique_ptr<Scheduler> scheduler;
@@ -257,18 +258,23 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         } else if (command_tokens[1] == "-ls")
         {
             dump_state_to_stream(std::cout);
+            global_objects::flat_memory_allocator->visualize_memory(-420);
         }
     }
 
     const std::map<std::string, command_handler> command_map = {
         {"clear", [](auto) { clear_screen(); draw_header(); }},
-        {"exit",  [](auto) { exit(0); }},
+        {"exit",  [](auto) { 
+            global_objects::clock_source.shutdown();
+            exit(0);
+        }},
         {"initialize", [](auto) {
             os_config::loadConfig("config.txt");
         	os_config::printConfig();
+            global_objects::clock_source.setCount(os_config::num_cpu);
             global_objects::flat_memory_allocator = std::make_unique<FlatMemoryAllocator>(os_config::max_overall_mem, FlatMemoryAllocator::FIRST_FIT);
             global_objects::process_manager.update_configuration(os_config::min_ins, os_config::max_ins, os_config::batch_process_freq, os_config::min_mem_per_proc, os_config::max_mem_per_proc);
-            global_objects::scheduler = std::make_unique<Scheduler>(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, global_objects::process_map_lock, os_config::quantum_cycles, os_config::delays_per_exec,
+            global_objects::scheduler = std::make_unique<Scheduler>(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, global_objects::clock_source, global_objects::process_map_lock, os_config::quantum_cycles, os_config::delays_per_exec,
 																	*global_objects::flat_memory_allocator);
             global_objects::scheduler->runScheduler();
         }},

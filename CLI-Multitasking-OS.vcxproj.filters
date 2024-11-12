@@ -89,6 +89,9 @@
     <ClInclude Include="FlatMemoryAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CPUClockSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ConcurrentPtrQueue.tpp" />

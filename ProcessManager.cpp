@@ -3,11 +3,12 @@
 #include <thread>
 #include <random>
 
-ProcessManager::ProcessManager(ProcessMap process_map, std::shared_mutex &process_map_lock, ProcessQueue process_queue, long long int min_ins, long long int max_ins, 
+ProcessManager::ProcessManager(ProcessMap process_map, std::shared_mutex &process_map_lock, ProcessQueue process_queue, CPUClockSource& clock_source, long long int min_ins, long long int max_ins,
 	long long int batch_process_freq, long long int min_mem_per_proc, long long int max_mem_per_proc) :
 process_map(process_map),
 entire_process_map_lock(process_map_lock),
 process_queue(process_queue),
+process_manager_semaphores(clock_source.getProcessManagerSemaphores()),
 min_ins(min_ins),
 max_ins(max_ins),
 batch_process_freq(batch_process_freq),
@@ -64,11 +65,13 @@ bool ProcessManager::is_generating_processes()
 void ProcessManager::scheduler_test_thread()
 {
 	this->process_generator = std::make_unique<std::jthread>(ProcessGenerator(*this, batch_process_freq));
+	this->process_manager_semaphores.enabled = true;
 }
 
 void ProcessManager::scheduler_test_thread_stop()
 {
 	this->process_generator = nullptr;
+	this->process_manager_semaphores.enabled = false;
 }
 
 void ProcessManager::update_configuration(long long int min_ins, long long int max_ins,
