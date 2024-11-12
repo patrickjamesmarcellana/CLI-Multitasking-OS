@@ -2,6 +2,7 @@
 #include <memory>
 #include <queue>
 #include <shared_mutex>
+#include "CPUClockSource.h"
 #include "CPUUsageTracker.h"
 #include "ConcurrentPtrQueue.h"
 #include "Process.h"
@@ -19,7 +20,7 @@ public:
         RR
     };
 
-    CPU(int id, Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec);
+    CPU(int id, Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec, CPUSemaphores& semaphores);
     ~CPU() = default;
     bool get_is_busy();
     void inc_cpu_counter();
@@ -40,4 +41,5 @@ private:
     long long int active_process_time_slice_expiry;
     
     CPUTracker cpu_usage;
+    CPUSemaphores& semaphores;
 };

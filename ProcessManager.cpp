@@ -3,13 +3,14 @@
 #include <thread>
 #include <random>
 
-ProcessManager::ProcessManager(ProcessMap process_map, std::shared_mutex &process_map_lock, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq) :
+ProcessManager::ProcessManager(ProcessMap process_map, std::shared_mutex &process_map_lock, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq, CPUClockSource &clockSource) :
 process_map(process_map),
 entire_process_map_lock(process_map_lock),
 process_queue(process_queue),
 min_ins(min_ins),
 max_ins(max_ins),
-batch_process_freq(batch_process_freq)
+batch_process_freq(batch_process_freq),
+sem(clockSource.getSemaphores(4))
 {
 }
 

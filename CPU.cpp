@@ -6,20 +6,22 @@
 using namespace std::literals::chrono_literals;
 
 
-CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec) : Worker(),
+CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec, CPUSemaphores& semaphores) : Worker(),
 id(id),
 algorithm(algorithm),
 process_queue(process_queue),
 process_map_lock(process_map_lock),
 quantum_cycles(quantum_cycles),
-delay_per_exec(delay_per_exec)
+delay_per_exec(delay_per_exec),
+semaphores(semaphores)
 //time_created(std::chrono::system_clock::now())
 {
 }
 
 void CPU::loop() {
     // prevents screen -ls/report-util from running until all CPUs release this
-    std::shared_lock prevent_lock_entire_process_map(process_map_lock);
+    //std::shared_lock prevent_lock_entire_process_map(process_map_lock);
+    semaphores.waitUntilCycleStart();
 
     if (active_process) {
         if (active_process->getCurrLine() >= active_process->getTotalLines())
@@ -49,13 +51,15 @@ void CPU::loop() {
     }
 
     if (active_process && active_process->getCurrLine() < active_process->getTotalLines()) {
+        //printf("%d %d\n", this->process_cpu_counter, this->delay_per_exec);
         if(this->process_cpu_counter % (this->delay_per_exec + 1) == 0)
         {
+            
             this->process_cpu_counter = 0;
             // get the command from the command list that is parallel to the current line of instruction, then execute it by passing the core ID
             auto time_executed = std::chrono::system_clock::now();
-            active_process->set_time_executed(time_executed);
-            active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
+            //active_process->set_time_executed(time_executed);
+            //active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
             active_process->incCurrLine();
 
             if(active_process->getCurrLine() > active_process->getTotalLines()) // check if incrementing curr line ends the process
@@ -65,12 +69,11 @@ void CPU::loop() {
         }
 
         //sleep(100ms);
-        cpu_usage.setActive();
     } else {
         // todo: do not set every cycle
-        cpu_usage.setIdle();
     }
 
+    semaphores.notifyDone();
     this->inc_cpu_counter();
 }
 

@@ -94,7 +94,9 @@ namespace global_objects
     std::unordered_map<std::string, std::shared_ptr<Process>> process_map;
     std::shared_mutex process_map_lock;
     std::shared_ptr<ConcurrentPtrQueue<Process>> process_queue = std::make_shared<ConcurrentPtrQueue<Process>>();
-    ProcessManager process_manager = ProcessManager(process_map, process_map_lock, process_queue, os_config::min_ins, os_config::max_ins, os_config::batch_process_freq);
+
+    CPUClockSource clockSource(5);
+    ProcessManager process_manager = ProcessManager(process_map, process_map_lock, process_queue, os_config::min_ins, os_config::max_ins, os_config::batch_process_freq, clockSource);
 
     std::unique_ptr<Scheduler> scheduler;
 }
@@ -146,7 +148,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         std::time_t time_t_time_executed = std::chrono::system_clock::to_time_t(time_executed);
         std::tm local_time_executed;
 
-        localtime_s(&local_time_executed, &time_t_time_executed);
+        //localtime_r(&local_time_executed, &time_t_time_executed);
 
         std::ostringstream oss;
         oss << "(" << std::put_time(&local_time_executed, "%m/%d/%Y %I:%M:%S%p") << ")";
@@ -161,7 +163,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         stream << "CPU utilization: " << global_objects::scheduler->get_cpu_utilization() << "%" << std::endl;
         stream << "Cores used: " << global_objects::scheduler->get_cores_used() << std::endl;
         stream << "Cores available: " << global_objects::scheduler->get_cores_available() << std::endl;
-        //stream << "Number of Process in Map: " << global_objects::process_map.size() << std::endl;
+        stream << "Number of Process in Map: " << global_objects::process_map.size() << std::endl;
         stream << "\n" << "---------------------------------------------" << std::endl;
         stream << "Running processes:" << std::endl;
         for(auto process : global_objects::process_map)
@@ -236,7 +238,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
             os_config::loadConfig("config.txt");
             // os_config::printConfig();
             global_objects::process_manager.update_configuration(os_config::min_ins, os_config::max_ins, os_config::batch_process_freq);
-            global_objects::scheduler = std::make_unique<Scheduler>(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, global_objects::process_map_lock, os_config::quantum_cycles, os_config::delays_per_exec);
+            global_objects::scheduler = std::make_unique<Scheduler>(os_config::num_cpu, os_config::scheduler, global_objects::process_queue, global_objects::process_map_lock, os_config::quantum_cycles, os_config::delays_per_exec, global_objects::clockSource);
             global_objects::scheduler->runScheduler();
         }},
         {"screen", route_screen},

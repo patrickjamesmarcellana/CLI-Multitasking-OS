@@ -13,7 +13,7 @@ public:
 	typedef std::unordered_map<std::string, std::shared_ptr<Process>>& ProcessMap;
 	typedef std::shared_ptr<ConcurrentPtrQueue<Process>>& ProcessQueue;
 
-	ProcessManager(ProcessMap process_map, std::shared_mutex& process_map_lock, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq);
+	ProcessManager(ProcessMap process_map, std::shared_mutex& process_map_lock, ProcessQueue process_queue, long long int min_ins, long long int max_ins, long long int batch_process_freq, CPUClockSource &clockSource);
 	~ProcessManager() = default;
 
 	std::shared_ptr<Process> save_process(std::string process_name);
@@ -24,16 +24,18 @@ public:
 	void scheduler_test_thread();
 	void scheduler_test_thread_stop();
 	void update_configuration(long long int min_ins, long long int max_ins, long long int batch_process_freq);
-
+	CPUSemaphores &sem;
 private:
 	class ProcessGenerator : public Worker {
 	public:
 		ProcessGenerator(ProcessManager &pm, long long int& freq) : Worker(), freq(freq), pm(pm) {}
 	protected:
 		virtual void loop() {
-			if(cpuCycle++ % freq == 0) {
+			pm.sem.waitUntilCycleStart();
+			if(cpuCycle++ % (freq) == 0) {
 				pm.save_process("process_" + std::to_string(pm.process_map.size()));
 			}
+			pm.sem.notifyDone();
 		}
 	private:
 			long long int cpuCycle = 0;

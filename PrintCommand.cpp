@@ -34,7 +34,7 @@ std::string PrintCommand::format_time(const std::chrono::time_point<std::chrono:
     std::time_t time_t_time_executed = std::chrono::system_clock::to_time_t(time_executed);
     std::tm local_time_executed;
 
-	localtime_s(&local_time_executed, &time_t_time_executed);
+	//localtime_r(&local_time_executed, &time_t_time_executed);
 
     std::ostringstream oss;
     oss << "(" << std::put_time(&local_time_executed, "%m/%d/%Y %I:%M:%S%p") << ")";

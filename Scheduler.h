@@ -3,13 +3,14 @@
 #include <memory>
 
 #include "CPU.h"
+#include "CPUClockSource.h"
 #include "Process.h"
 
 class Scheduler
 {
 public:
 	typedef std::shared_ptr<ConcurrentPtrQueue<Process>>& ProcessQueue;
-	Scheduler(int cores, CPU::Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec);
+	Scheduler(int cores, CPU::Algorithm algorithm, ProcessQueue process_queue, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec, CPUClockSource& cpuClockSource);
 	~Scheduler() = default;
 
 	void runScheduler();
@@ -21,6 +22,7 @@ public:
 private:
 	int num_cores;
 	CPU::Algorithm algorithm;
+	CPUClockSource& cpuClockSource;
 	std::vector<std::shared_ptr<CPU>> cpu_cores;
 	std::vector<std::jthread> cpu_core_threads;
 	std::shared_ptr<ConcurrentPtrQueue<Process>> process_queue;
