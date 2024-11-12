@@ -65,7 +65,7 @@ void FlatMemoryAllocator::dump_memory_state_to_stream(std::ostream& stream) {
 	}
 
 
-	stream << "\n" << "----start---- = 0" << std::endl;
+	stream << "----start---- = 0" << std::endl;
 	stream << std::endl;
 }
 
