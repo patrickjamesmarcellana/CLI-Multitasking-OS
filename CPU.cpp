@@ -6,7 +6,7 @@
 using namespace std::literals::chrono_literals;
 
 
-CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, CPUSemaphores& semaphores, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec, FlatMemoryAllocator& flat_memory_allocator) : Worker(),
+CPU::CPU(int id, Algorithm algorithm, ProcessQueue process_queue, CPUSemaphores& semaphores, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec, IMemoryAllocator& memory_allocator) : Worker(),
 id(id),
 algorithm(algorithm),
 process_queue(process_queue),
@@ -14,7 +14,7 @@ process_map_lock(process_map_lock),
 quantum_cycles(quantum_cycles),
 delay_per_exec(delay_per_exec),
 semaphores(semaphores),
-flat_memory_allocator(flat_memory_allocator)
+memory_allocator(memory_allocator)
 //time_created(std::chrono::system_clock::now())
 {
 }
@@ -59,7 +59,7 @@ void* CPU::try_allocating_memory_for_new_process(std::shared_ptr<Process> proces
     void* memory = nullptr;
     if (process)
     {
-        memory = this->flat_memory_allocator.allocate(process->get_memory_required(), process->getProcessName());
+        memory = this->memory_allocator.allocate(process->get_memory_required(), process->getProcessName());
         if (memory != nullptr) {
             return memory;
         }
@@ -69,7 +69,7 @@ void* CPU::try_allocating_memory_for_new_process(std::shared_ptr<Process> proces
 
 void CPU::deallocate_memory_of_active_process()
 {
-    this->flat_memory_allocator.deallocate(this->active_process->get_memory_address(), this->active_process->get_memory_required());
+    this->memory_allocator.deallocate(this->active_process->get_memory_address(), this->active_process->get_memory_required());
 }
 
 void CPU::handle_finished_processes()
@@ -81,7 +81,7 @@ void CPU::handle_finished_processes()
             this->deallocate_memory_of_active_process();
             this->active_process = nullptr;
             this->is_busy = false;
-            this->flat_memory_allocator.dec_processes_in_memory();
+            this->memory_allocator.dec_processes_in_memory();
         }
         else if (algorithm == RR && active_process->getCurrLine() >= this->active_process_time_slice_expiry) // if time slice is used up when the algorithm is RR
         {
@@ -113,7 +113,7 @@ std::shared_ptr<Process> CPU::get_process_from_queue()
             {
                 // let's roll
                 process_in_front->set_memory_address(memory);
-                this->flat_memory_allocator.inc_processes_in_memory();
+                this->memory_allocator.inc_processes_in_memory();
                 return process_in_front;
             }
         }

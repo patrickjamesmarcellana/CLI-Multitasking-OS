@@ -5,7 +5,7 @@
 #include "CPUClockSource.h"
 #include "CPUUsageTracker.h"
 #include "ConcurrentPtrQueue.h"
-#include "FlatMemoryAllocator.h"
+#include "IMemoryAllocator.h"
 #include "Process.h"
 #include "Worker.h"
 
@@ -22,7 +22,7 @@ public:
     };
 
     CPU(int id, Algorithm algorithm, ProcessQueue process_queue, CPUSemaphores& semaphores, std::shared_mutex& process_map_lock, long long int quantum_cycles, long long int delay_per_exec,
-         FlatMemoryAllocator& flat_memory_allocator);
+        IMemoryAllocator& memory_allocator);
     ~CPU() = default;
     bool get_is_busy();
     void inc_cpu_counter();
@@ -48,7 +48,7 @@ private:
     bool is_busy = false;
     long long int process_cpu_counter = 0;
     long long int active_process_time_slice_expiry;
-    FlatMemoryAllocator& flat_memory_allocator;
+    IMemoryAllocator& memory_allocator;
     
     CPUTracker cpu_usage;
     CPUSemaphores& semaphores;

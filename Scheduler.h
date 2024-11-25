@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "CPU.h"
-#include "FlatMemoryAllocator.h"
+#include "IMemoryAllocator.h"
 #include "Process.h"
 
 class Scheduler
@@ -11,7 +11,7 @@ class Scheduler
 public:
 	typedef std::shared_ptr<ConcurrentPtrQueue<Process>>& ProcessQueue;
 	Scheduler(int cores, CPU::Algorithm algorithm, ProcessQueue process_queue, CPUClockSource& clock_source, std::shared_mutex& process_map_lock, long long int quantum_cycles,
-		long long int delay_per_exec, FlatMemoryAllocator& flat_memory_allocator);
+		long long int delay_per_exec, IMemoryAllocator& memory_allocator);
 	~Scheduler() = default;
 
 	void runScheduler();
@@ -29,6 +29,6 @@ private:
 	std::shared_mutex& process_map_lock;
 	long long int quantum_cycles;
 	long long int delay_per_exec;
-	FlatMemoryAllocator& flat_memory_allocator;
+	IMemoryAllocator& memory_allocator;
 	CPUClockSource& clock_source;
 };

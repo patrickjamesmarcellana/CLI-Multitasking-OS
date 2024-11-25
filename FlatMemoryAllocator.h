@@ -24,8 +24,8 @@ public:
 	void* allocate(size_t size, std::string process_name) override;
 	void deallocate(void* ptr, size_t size) override;
 	void visualize_memory(int current_cycle) override;
-	void dec_processes_in_memory();
-	void inc_processes_in_memory();
+	void dec_processes_in_memory() override;
+	void inc_processes_in_memory() override;
 
 private:
 	class FlatMemoryAllocInfo {
