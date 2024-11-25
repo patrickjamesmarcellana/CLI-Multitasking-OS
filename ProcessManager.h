@@ -15,10 +15,6 @@ public:
 
 	ProcessManager(ProcessMap process_map, std::shared_mutex& process_map_lock, ProcessQueue process_queue, CPUClockSource& clock_source, long long int min_ins, long long int max_ins, long long int batch_process_freq,
 				   long long int min_mem_per_proc, long long int max_mem_per_proc);
-	~ProcessManager() {
-		// need to also disable semaphores
-		scheduler_test_thread_stop();
-	}
 
 	std::shared_ptr<Process> save_process(std::string process_name);
 	std::shared_ptr<Process> get_process(std::string process_name);
