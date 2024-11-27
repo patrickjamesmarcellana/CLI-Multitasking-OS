@@ -135,6 +135,7 @@
     <ClCompile Include="FlatMemoryAllocator.cpp" />
     <ClCompile Include="IMemoryAllocator.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PagingAllocator.cpp" />
     <ClCompile Include="PrintCommand.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="ProcessManager.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="CPUClockSource.h" />
     <ClInclude Include="FlatMemoryAllocator.h" />
     <ClInclude Include="IMemoryAllocator.h" />
+    <ClInclude Include="PagingAllocator.h" />
     <ClInclude Include="PrintCommand.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="ProcessManager.h" />
