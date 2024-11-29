@@ -68,3 +68,23 @@ void PagingAllocator::inc_processes_in_memory()
 {
 	this->processes_in_memory++;
 }
+
+void PagingAllocator::set_process_running_to_false(std::string process_name)
+{
+	
+}
+
+void PagingAllocator::set_process_running_to_true(std::string process_name)
+{
+
+}
+
+bool PagingAllocator::is_process_in_backing_store(std::string process_name)
+{
+	return false;
+}
+
+void PagingAllocator::delete_process_from_backing_store(std::string process_name)
+{
+	
+}

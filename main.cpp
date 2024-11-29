@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "BackingStore.h"
 #include "CPU.h"
 #include "FlatMemoryAllocator.h"
 #include "PagingAllocator.h"
@@ -128,6 +129,7 @@ namespace global_objects
     CPUClockSource clock_source;
     ProcessManager process_manager = ProcessManager(process_map, process_map_lock, process_queue, clock_source, os_config::min_ins, os_config::max_ins, os_config::batch_process_freq, os_config::min_mem_per_proc, os_config::max_mem_per_proc);
     std::unique_ptr<IMemoryAllocator> memory_allocator; // temporarily wrap in unique_ptr because we cannot copy/move objects containing a mutex
+    BackingStore backing_store = BackingStore(process_map);
 
     std::unique_ptr<Scheduler> scheduler;
 }
@@ -274,7 +276,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         	os_config::printConfig();
             global_objects::clock_source.setCount(os_config::num_cpu);
             if (os_config::max_overall_mem == os_config::mem_per_frame) {
-                global_objects::memory_allocator = std::make_unique<FlatMemoryAllocator>(os_config::max_overall_mem, FlatMemoryAllocator::FIRST_FIT);
+                global_objects::memory_allocator = std::make_unique<FlatMemoryAllocator>(os_config::max_overall_mem, FlatMemoryAllocator::FIRST_FIT, global_objects::backing_store);
             }
             else {
                 global_objects::memory_allocator = std::make_unique<PagingAllocator>(os_config::max_overall_mem, os_config::mem_per_frame);

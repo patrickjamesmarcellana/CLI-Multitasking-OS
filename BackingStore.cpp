@@ -1,24 +1,27 @@
 #include "BackingStore.h"
 
 #include <iostream>
-
-void BackingStore::storeProcess(Process process, int pages)
+BackingStore::BackingStore(ProcessMap process_map):
+process_map(process_map)
 {
-    std::ofstream stream(process.getProcessName() + "_memory.txt", std::ios::trunc);
-    stream << "id " << process.getId() << std::endl;
-    stream << "name " << process.getProcessName() << std::endl;
-    stream << "pages " << pages << std::endl;
-    stream << "size " << process.get_memory_required() << std::endl;
 }
 
-int BackingStore::retrieveProcess(int process_id)
+void BackingStore::storeProcess(std::string process_name, int pages)
 {
-    const std::string& processMemoryFile = process_id + "_memory.txt";
+    std::ofstream stream(this->process_map[process_name]->getProcessName() + "_memory.txt", std::ios::trunc);
+    stream << "id " << this->process_map[process_name]->getId() << std::endl;
+    stream << "name " << this->process_map[process_name]->getProcessName() << std::endl;
+    stream << "pages " << pages << std::endl;
+    stream << "size " << this->process_map[process_name]->get_memory_required() << std::endl;
+}
+
+int BackingStore::retrieveProcess(std::string process_name)
+{
+    const std::string& processMemoryFile = process_name + "_memory.txt";
     std::ifstream file(processMemoryFile);
     std::string line;
 
     int process_id = -1;
-    std::string process_name = "";
     int pages_count = 1;
     size_t memory_size = 0;
 
@@ -36,10 +39,6 @@ int BackingStore::retrieveProcess(int process_id)
             {
                 process_id = std::stoi(value);
             }
-            else if (key == "name")
-            {
-                process_name = value;
-            } 
             else if (key == "pages")
             {
                 pages_count = std::stoi(value);

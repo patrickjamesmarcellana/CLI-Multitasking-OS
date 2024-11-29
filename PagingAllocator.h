@@ -12,6 +12,10 @@ public:
 	void visualize_memory(int current_cycle) override;
 	void dec_processes_in_memory() override;
 	void inc_processes_in_memory() override;
+	void set_process_running_to_false(std::string process_name) override;
+	void set_process_running_to_true(std::string process_name) override;
+	bool is_process_in_backing_store(std::string process_name) override;
+	void delete_process_from_backing_store(std::string process_name) override;
 private:
 	using page_table = std::unordered_map<size_t, size_t>;
 	size_t max_memory_size, page_size, frame_count;

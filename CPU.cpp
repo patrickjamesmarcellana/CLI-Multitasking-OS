@@ -89,6 +89,7 @@ void CPU::handle_finished_processes()
             this->active_process->set_assigned_core_id(-1);
             process_queue->push(this->active_process);
             //this->deallocate_memory_of_active_process();
+            this->memory_allocator.set_process_running_to_false(this->active_process->getProcessName());
             this->active_process = nullptr;
             this->is_busy = false;
             //this->flat_memory_allocator.dec_processes_in_memory();
@@ -117,9 +118,33 @@ std::shared_ptr<Process> CPU::get_process_from_queue()
                 return process_in_front;
             }
         }
-        else 
+        else // if process exists either in main memory or in backing store
         {
-            // no allocation needed (e.g. round robin process returns after pre-emption)
+            // if process exists in the backing store
+            if(this->memory_allocator.is_process_in_backing_store(process_in_front->getProcessName()))
+            {
+                // Hack: Retrieve data from backing store but it's technically useless so we no longer call it
+
+            	// Delete process from backing store
+                this->memory_allocator.delete_process_from_backing_store(process_in_front->getProcessName());
+
+                void* memory = this->try_allocating_memory_for_new_process(process_in_front);
+                if (memory == nullptr)
+                {
+                    // go back to queue
+                    this->process_queue->push(process_in_front);
+                    return nullptr;
+                }
+                else
+                {
+                    // let's roll
+                    process_in_front->set_memory_address(memory);
+                    this->memory_allocator.inc_processes_in_memory();
+                    return process_in_front;
+                }
+            }
+
+            // if process exists in the main memory already, that is, no more allocation needed
             return process_in_front;
         }
 

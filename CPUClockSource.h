@@ -23,7 +23,7 @@ private:
 class CPUClockSource {
 public:
     // TODO: not hardcoded cpu limit
-    CPUClockSource() : cpuSemaphores(8), processManagerSemaphores(false /* disabled initially */), clockThread(&CPUClockSource::clockThreadFunc, this) {};
+    CPUClockSource() : cpuSemaphores(128), processManagerSemaphores(false /* disabled initially */), clockThread(&CPUClockSource::clockThreadFunc, this) {};
     ~CPUClockSource() {
         clockThreadEnabled = false;
         clockThread.join();
