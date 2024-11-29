@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <random>
+#include "RandomPow2.h"
 
 ProcessManager::ProcessManager(ProcessMap process_map, std::shared_mutex &process_map_lock, ProcessQueue process_queue, CPUClockSource& clock_source, long long int min_ins, long long int max_ins,
 	long long int batch_process_freq, long long int min_mem_per_proc, long long int max_mem_per_proc) :
@@ -84,9 +85,5 @@ void ProcessManager::update_configuration(long long int min_ins, long long int m
 
 long long int ProcessManager::generate_random_memory_req()
 {
-	std::random_device rand;
-	std::mt19937 gen(rand());
-	std::uniform_int_distribution<long long> distr(this->min_mem_per_proc, this->max_mem_per_proc);
-
-	return distr(gen);
+	return RandomPow2::generate_random_pow2(this->min_mem_per_proc, this->max_mem_per_proc);
 }
