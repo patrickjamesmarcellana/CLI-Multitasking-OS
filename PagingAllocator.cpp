@@ -6,7 +6,7 @@
 // positive numbers only
 #define ceil_div(a, b) ((a + b - 1) / b)
 
-PagingAllocator::PagingAllocator(size_t max_memory_size, size_t page_size, BackingStore backing_store) :
+PagingAllocator::PagingAllocator(size_t max_memory_size, size_t page_size, BackingStore& backing_store) :
 	max_memory_size(max_memory_size), 
 	page_size(page_size),
 	frame_count(max_memory_size / page_size),
@@ -135,6 +135,7 @@ void PagingAllocator::delete_process_from_backing_store(std::string process_name
 	try
 	{
 		std::filesystem::remove(filename);
+		this->backing_store.page_out++;
 	}
 	catch (const std::filesystem::filesystem_error& e) {
 		std::cerr << "Error: " << e.what() << '\n';

@@ -7,7 +7,7 @@
 class PagingAllocator : public IMemoryAllocator
 {
 public:
-	PagingAllocator(size_t max_memory_size, size_t page_size, BackingStore backing_store);
+	PagingAllocator(size_t max_memory_size, size_t page_size, BackingStore& backing_store);
 	void* allocate(size_t size, std::string process_name) override;
 	void deallocate(void* ptr, size_t size) override;
 	void visualize_memory(int current_cycle) override;
@@ -29,7 +29,7 @@ private:
 	std::atomic<size_t> processes_in_memory = 0;
 	size_t age = 0;
 
-	BackingStore backing_store;
+	BackingStore& backing_store;
 	std::recursive_mutex alloc_mutex;
 	std::queue<size_t> free_frame_list;
 	std::unordered_map<void*, page_table> proc_page_tbl_map; // map handle to its page table

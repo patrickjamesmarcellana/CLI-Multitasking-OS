@@ -347,8 +347,8 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
             std::cout << "Idle cpu ticks   " << std::setw(WIDTH) << cpu_idle_active_ticks.first << std::endl;
             std::cout << "Active cpu ticks " << std::setw(WIDTH) << cpu_idle_active_ticks.second << std::endl;
             std::cout << "Total cpu ticks  " << std::setw(WIDTH) << cpu_idle_active_ticks.first + cpu_idle_active_ticks.second << std::endl;
-            std::cout << "Num paged in     " << std::setw(WIDTH) << "TODO" << std::endl;
-            std::cout << "Num paged out    " << std::setw(WIDTH) << "TODO" << std::endl;
+            std::cout << "Num paged in     " << std::setw(WIDTH) << global_objects::backing_store.page_in << std::endl;
+            std::cout << "Num paged out    " << std::setw(WIDTH) << global_objects::backing_store.page_out << std::endl;
         }},
         {"process-smi", [](auto) {
             dump_state_to_stream_v2(std::cout);

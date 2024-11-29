@@ -21,7 +21,7 @@ public:
 	{
 		FIRST_FIT
 	};
-	FlatMemoryAllocator(size_t maximum_size, Primary_Fit_Approach fit_approach, BackingStore backing_store);
+	FlatMemoryAllocator(size_t maximum_size, Primary_Fit_Approach fit_approach, BackingStore& backing_store);
 	~FlatMemoryAllocator();
 
 	void* allocate(size_t size, std::string process_name) override;
@@ -56,7 +56,7 @@ private:
 	std::unordered_map<size_t, bool> allocation_map;
 	Primary_Fit_Approach fit_approach;
 	int processes_in_memory;
-	BackingStore backing_store;
+	BackingStore& backing_store;
 
 	void initialize_memory();
 	bool can_allocate_at(size_t index, size_t size);

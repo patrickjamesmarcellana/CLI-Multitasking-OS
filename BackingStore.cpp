@@ -13,6 +13,7 @@ void BackingStore::storeProcess(std::string process_name, int pages)
     stream << "name " << this->process_map[process_name]->getProcessName() << std::endl;
     stream << "pages " << pages << std::endl;
     stream << "size " << this->process_map[process_name]->get_memory_required() << std::endl;
+    page_in++;
 }
 
 int BackingStore::retrieveProcess(std::string process_name)
@@ -53,5 +54,6 @@ int BackingStore::retrieveProcess(std::string process_name)
         std::cerr << "Unable to open memory file of process: " << processMemoryFile << std::endl;
     }
 
+    page_out++;
     return process_id;
 }

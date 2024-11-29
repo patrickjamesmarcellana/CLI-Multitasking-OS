@@ -1,6 +1,6 @@
 #include "FlatMemoryAllocator.h"
 
-FlatMemoryAllocator::FlatMemoryAllocator(size_t maximum_size, Primary_Fit_Approach fit_approach, BackingStore backing_store) :
+FlatMemoryAllocator::FlatMemoryAllocator(size_t maximum_size, Primary_Fit_Approach fit_approach, BackingStore& backing_store) :
 maximum_size(maximum_size),
 allocated_size(0),
 fit_approach(fit_approach),
@@ -118,6 +118,7 @@ void FlatMemoryAllocator::delete_process_from_backing_store(std::string process_
 	try
 	{
 		std::filesystem::remove(filename);
+		this->backing_store.page_out++;
 	}
 	catch (const std::filesystem::filesystem_error& e) {
 		std::cerr << "Error: " << e.what() << '\n';
