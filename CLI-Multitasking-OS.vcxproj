@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BackingStore.cpp" />
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="CPU.cpp" />
@@ -143,6 +144,7 @@
     <ClCompile Include="Screen.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BackingStore.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="ConcurrentPtrQueue.h" />
     <ClInclude Include="Console.h" />

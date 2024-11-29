@@ -31,6 +31,7 @@ private:
 	class FlatMemoryAllocInfo {
 	public:
 		std::string name;
+		bool running;
 		size_t relocation; // phy addr of virtual memory location 0
 		size_t size;
 		bool operator<(FlatMemoryAllocInfo& other) {
