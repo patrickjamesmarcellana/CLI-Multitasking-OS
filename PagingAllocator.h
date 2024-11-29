@@ -12,6 +12,7 @@ public:
 	void visualize_memory(int current_cycle) override;
 	void dec_processes_in_memory() override;
 	void inc_processes_in_memory() override;
+	size_t get_active_memory() override;
 	void set_process_running_to_false(std::string process_name) override;
 	void set_process_running_to_true(std::string process_name) override;
 	bool is_process_in_backing_store(std::string process_name) override;

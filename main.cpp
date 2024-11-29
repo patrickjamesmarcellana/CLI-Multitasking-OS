@@ -222,6 +222,32 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         stream << std::endl;
     }
 
+    void dump_state_to_stream_v2(std::ostream& stream) {
+        std::unique_lock lock_entire_process_map(global_objects::process_map_lock);
+
+        stream << "--------------------------------------------" << std::endl;
+        stream << "| PROCESS-SMI V01.00 Driver Version: 01.00 |" << std::endl;
+        stream << "--------------------------------------------" << std::endl;
+        stream << "CPU-Util: " << global_objects::scheduler->get_cpu_utilization() << "%" << std::endl;
+
+        size_t active_memory = global_objects::memory_allocator->get_active_memory();
+        stream << "Memory Usage: " << active_memory / 1024 << "MiB / " << os_config::max_overall_mem / 1024 << "MiB" << std::endl;
+        stream << "Memory Util: " << 100 * active_memory / os_config::max_overall_mem << "%" << std::endl;
+
+        stream << std::endl;
+        stream << "============================================" << std::endl;
+        stream << "Running processes and memory usage:" << std::endl;
+        stream << "--------------------------------------------" << std::endl;
+        for (auto& process : global_objects::process_map)
+        {
+            if (!process.second->is_done_executing() && process.second->get_assigned_core_id() != -1)
+            {
+                stream << process.second->get_memory_required() / 1024 << "MiB" << std::endl;
+            }
+        }
+        stream << "--------------------------------------------" << std::endl;
+    }
+
     void route_screen(std::vector<String> command_tokens) {
 
         if (command_tokens[1] == "-r") {
@@ -310,6 +336,22 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {"report-util", [](auto) {
             std::ofstream stream("csopesy-log.txt", std::ios::trunc);
             dump_state_to_stream(stream);
+        }},
+        {"vmstat", [](auto) {
+            const size_t WIDTH = 12;
+            size_t active_memory = global_objects::memory_allocator->get_active_memory();
+            auto cpu_idle_active_ticks = global_objects::scheduler->get_idle_active_ticks();
+            std::cout << "Total memory     " << std::setw(WIDTH) << std::to_string(os_config::max_overall_mem / 1000) + "KB" << std::endl;
+            std::cout << "Used memory      " << std::setw(WIDTH) << std::to_string(active_memory / 1000) + "KB" << std::endl;
+            std::cout << "Free memory      " << std::setw(WIDTH) << std::to_string((os_config::max_overall_mem - active_memory) / 1000) + "KB" << std::endl;
+            std::cout << "Idle cpu ticks   " << std::setw(WIDTH) << cpu_idle_active_ticks.first << std::endl;
+            std::cout << "Active cpu ticks " << std::setw(WIDTH) << cpu_idle_active_ticks.second << std::endl;
+            std::cout << "Total cpu ticks  " << std::setw(WIDTH) << cpu_idle_active_ticks.first + cpu_idle_active_ticks.second << std::endl;
+            std::cout << "Num paged in     " << std::setw(WIDTH) << "TODO" << std::endl;
+            std::cout << "Num paged out    " << std::setw(WIDTH) << "TODO" << std::endl;
+        }},
+        {"process-smi", [](auto) {
+            dump_state_to_stream_v2(std::cout);
         }},
         {"mem-debug", [](auto) {
             global_objects::memory_allocator->visualize_memory(0);

@@ -13,4 +13,5 @@ public:
 	virtual void set_process_running_to_true(std::string process_name) = 0;
 	virtual bool is_process_in_backing_store(std::string process_name) = 0;
 	virtual void delete_process_from_backing_store(std::string process_name) = 0;
+	virtual size_t get_active_memory() = 0;
 };

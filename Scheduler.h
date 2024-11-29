@@ -19,6 +19,7 @@ public:
 	int get_cores_available();
 	int get_total_cores();
 	int get_cpu_utilization();
+	std::pair<size_t, size_t> get_idle_active_ticks();
 
 private:
 	int num_cores;

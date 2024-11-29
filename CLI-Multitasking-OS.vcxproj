@@ -157,6 +157,7 @@
     <ClInclude Include="PrintCommand.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="ProcessManager.h" />
+    <ClInclude Include="RandomPow2.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Worker.h" />
