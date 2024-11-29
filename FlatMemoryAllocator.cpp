@@ -89,6 +89,11 @@ void FlatMemoryAllocator::inc_processes_in_memory()
 	//std::cout << std::to_string(this->processes_in_memory) + "\n";
 }
 
+size_t FlatMemoryAllocator::get_active_memory()
+{
+	return this->allocated_size;
+}
+
 void FlatMemoryAllocator::initialize_memory()
 {
 	memory = std::vector<int>(maximum_size, -1); // -1 means unused

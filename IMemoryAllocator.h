@@ -9,4 +9,5 @@ public:
 	virtual void visualize_memory(int current_cycle) = 0;
 	virtual void inc_processes_in_memory() = 0;
 	virtual void dec_processes_in_memory() = 0;
+	virtual size_t get_active_memory() = 0;
 };

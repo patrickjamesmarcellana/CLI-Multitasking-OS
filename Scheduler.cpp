@@ -60,3 +60,13 @@ int Scheduler::get_cpu_utilization()
 {
 	return static_cast<int>(static_cast<double>(this->get_cores_used()) / this->num_cores * 100);
 }
+
+std::pair<size_t, size_t> Scheduler::get_idle_active_ticks()
+{
+	std::pair<size_t, size_t> counts = { 0, 0 };
+	for (auto& cpu : cpu_cores) {
+		auto cpu_ticks = cpu->get_idle_active_ticks();
+		counts = { counts.first + cpu_ticks.first, counts.second + cpu_ticks.second };
+	}
+	return counts;
+}

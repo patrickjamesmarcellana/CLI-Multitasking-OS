@@ -35,7 +35,7 @@ public:
     void* try_allocating_memory_for_new_process(std::shared_ptr<Process> process);
     void deallocate_memory_of_active_process();
     std::shared_ptr<Process> get_process_from_queue();
-
+    std::pair<size_t, size_t> get_idle_active_ticks();
 private:
     int id;
     Algorithm algorithm;
@@ -46,6 +46,7 @@ private:
     long long int delay_per_exec;
     virtual void loop();
     bool is_busy = false;
+    long long int process_cpu_counter_active = 0;
     long long int process_cpu_counter = 0;
     long long int active_process_time_slice_expiry;
     IMemoryAllocator& memory_allocator;

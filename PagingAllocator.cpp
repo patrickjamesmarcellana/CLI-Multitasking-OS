@@ -68,3 +68,14 @@ void PagingAllocator::inc_processes_in_memory()
 {
 	this->processes_in_memory++;
 }
+
+size_t PagingAllocator::get_active_memory()
+{
+	std::lock_guard lock(this->alloc_mutex);
+
+	size_t total = 0;
+	for (auto& [handle, page_table] : this->proc_page_tbl_map) {
+		total += page_table.size() * this->page_size;
+	}
+	return total;
+}

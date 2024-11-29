@@ -127,6 +127,13 @@ std::shared_ptr<Process> CPU::get_process_from_queue()
     return nullptr;
 }
 
+std::pair<size_t, size_t> CPU::get_idle_active_ticks()
+{
+    size_t active_ticks = this->process_cpu_counter_active;
+    size_t total_ticks = this->process_cpu_counter;
+    return {total_ticks - active_ticks, active_ticks};
+}
+
 void CPU::handle_reception_of_process()
 {
     if (!active_process) {
@@ -156,7 +163,7 @@ void CPU::handle_execution_of_process()
             //active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
             active_process->incCurrLine();
         }
-
+        this->process_cpu_counter_active++;
     }
 }
 

@@ -26,7 +26,7 @@ public:
 	void visualize_memory(int current_cycle) override;
 	void dec_processes_in_memory() override;
 	void inc_processes_in_memory() override;
-
+	size_t get_active_memory() override;
 private:
 	class FlatMemoryAllocInfo {
 	public:
