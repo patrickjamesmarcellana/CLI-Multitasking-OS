@@ -30,10 +30,6 @@ void CPU::loop() {
     this->handle_reception_of_process(); 
     this->handle_execution_of_process();
 
-    if (process_cpu_counter % quantum_cycles == 0 && id == 0) {
-        //this->flat_memory_allocator.visualize_memory(process_cpu_counter / quantum_cycles);
-    }
-
     this->inc_cpu_counter();
     semaphores.notifyDone();
 }
