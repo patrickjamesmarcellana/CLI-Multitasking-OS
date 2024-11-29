@@ -14,6 +14,10 @@ namespace RandomPow2 {
 		while (POW2(max_exp + 1) <= max) { // if 2^(max_exp + 1) still falls under the range
 			max_exp++;
 		}
+
+		if (min_exp > max_exp) {
+			min_exp = max_exp;
+		}
 		
 		std::uniform_int_distribution<long long> distr(min_exp, max_exp);
 		return POW2(distr(gen));
