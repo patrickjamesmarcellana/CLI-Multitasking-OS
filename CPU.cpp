@@ -125,9 +125,6 @@ std::shared_ptr<Process> CPU::get_process_from_queue()
             {
                 // Hack: Retrieve data from backing store but it's technically useless so we no longer call it
 
-            	// Delete process from backing store
-                this->memory_allocator.delete_process_from_backing_store(process_in_front->getProcessName());
-
                 void* memory = this->try_allocating_memory_for_new_process(process_in_front);
                 if (memory == nullptr)
                 {
@@ -140,10 +137,15 @@ std::shared_ptr<Process> CPU::get_process_from_queue()
                     // let's roll
                     process_in_front->set_memory_address(memory);
                     this->memory_allocator.inc_processes_in_memory();
+
+                    // Delete process from backing store
+                    this->memory_allocator.delete_process_from_backing_store(process_in_front->getProcessName());
+
                     return process_in_front;
                 }
             }
 
+            std::cout << "process not in backing store, is probably in MM\n";
             // if process exists in the main memory already, that is, no more allocation needed
             return process_in_front;
         }

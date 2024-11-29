@@ -38,7 +38,7 @@ void* FlatMemoryAllocator::allocate(size_t size, std::string process_name)
 		}
 
 		// get oldest allocated process and swap to the backing store
-		size_t lower_new_free = -1;
+		size_t lower_new_free = 0;
 		std::optional<std::pair<size_t, FlatMemoryAllocInfo>> oldest_process;
 		for (auto& [position, alloc_info] : allocations) { // allocations are sorted by addresses
 			if(!alloc_info.running &&
@@ -59,7 +59,7 @@ void* FlatMemoryAllocator::allocate(size_t size, std::string process_name)
 				}
 
 				// find first free space below lower
-				size_t upper_new_free = upper;
+				size_t upper_new_free = upper - 1;
 				for (size_t i = upper + 1; i < this->maximum_size; i++)
 				{
 					if (i < this->maximum_size && this->allocation_map[i])
@@ -83,14 +83,13 @@ void* FlatMemoryAllocator::allocate(size_t size, std::string process_name)
 		if(oldest_process)
 		{
 			// store the oldest process in the backing store
-			this->backing_store.storeProcess(process_name, 1);
+			this->backing_store.storeProcess(oldest_process->second.name, 1);
 
 			// deallocate oldest process memory from the main memory
 			this->deallocate_at(oldest_process->first, oldest_process->second.size);
 
 			// allocate the new process to the lowest free available space from the lower bound of the swapped process
 			allocate_at(lower_new_free, size, process_name);
-
 			return &memory[lower_new_free];
 		}
 
@@ -128,7 +127,7 @@ void FlatMemoryAllocator::delete_process_from_backing_store(std::string process_
 void FlatMemoryAllocator::set_process_running_to_false(std::string process_name)
 {
 	for (auto& [position, alloc_info] : this->allocations) { // allocations are sorted by addresses
-		if (!alloc_info.running && alloc_info.name == process_name)
+		if (alloc_info.running && alloc_info.name == process_name)
 		{
 			alloc_info.running = false;
 		}
