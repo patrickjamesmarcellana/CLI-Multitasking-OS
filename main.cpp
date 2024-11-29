@@ -305,7 +305,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
                 global_objects::memory_allocator = std::make_unique<FlatMemoryAllocator>(os_config::max_overall_mem, FlatMemoryAllocator::FIRST_FIT, global_objects::backing_store);
             }
             else {
-                global_objects::memory_allocator = std::make_unique<PagingAllocator>(os_config::max_overall_mem, os_config::mem_per_frame);
+                global_objects::memory_allocator = std::make_unique<PagingAllocator>(os_config::max_overall_mem, os_config::mem_per_frame, global_objects::backing_store);
             }
             
             global_objects::process_manager.update_configuration(os_config::min_ins, os_config::max_ins, os_config::batch_process_freq, os_config::min_mem_per_proc, os_config::max_mem_per_proc);
