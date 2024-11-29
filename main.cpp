@@ -242,7 +242,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {
             if (!process.second->is_done_executing() && process.second->get_assigned_core_id() != -1)
             {
-                stream << process.second->get_memory_required() / 1024 << "KiB" << std::endl;
+                stream << process.second->getProcessName() << " " << process.second->get_memory_required() / 1024 << "KiB" << std::endl;
             }
         }
         stream << "--------------------------------------------" << std::endl;
@@ -287,7 +287,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         } else if (command_tokens[1] == "-ls")
         {
             dump_state_to_stream(std::cout);
-            global_objects::memory_allocator->visualize_memory(-420);
+            //global_objects::memory_allocator->visualize_memory(-420);
         }
     }
 
@@ -299,7 +299,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         }},
         {"initialize", [](auto) {
             os_config::loadConfig("config.txt");
-        	os_config::printConfig();
+        	//os_config::printConfig();
             global_objects::clock_source.setCount(os_config::num_cpu);
             if (os_config::max_overall_mem == os_config::mem_per_frame) {
                 global_objects::memory_allocator = std::make_unique<FlatMemoryAllocator>(os_config::max_overall_mem, FlatMemoryAllocator::FIRST_FIT, global_objects::backing_store);

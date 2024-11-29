@@ -185,6 +185,7 @@ void CPU::handle_execution_of_process()
             active_process->set_time_executed(time_executed);
             //active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
             active_process->incCurrLine();
+            std::this_thread::sleep_for(50ms);
         }
         this->process_cpu_counter_active++;
     }
