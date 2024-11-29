@@ -75,19 +75,19 @@ namespace os_config
                 }
             	else if (key == "max-overall-mem")
                 {
-                    max_overall_mem = std::stoll(value);
+                    max_overall_mem = std::stoll(value) * 1024;
                 }
                 else if (key == "mem-per-frame")
                 {
-                    mem_per_frame = std::stoll(value);
+                    mem_per_frame = std::stoll(value) * 1024;
                 }
             	else if (key == "min-mem-per-proc")
                 {
-                    min_mem_per_proc = std::stoll(value);
+                    min_mem_per_proc = std::stoll(value) * 1024;
                 }
                 else if (key == "max-mem-per-proc")
                 {
-                    max_mem_per_proc = std::stoll(value);
+                    max_mem_per_proc = std::stoll(value) * 1024;
                 }
                 else if (key == "mem-per-proc")
                 {
@@ -231,7 +231,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         stream << "CPU-Util: " << global_objects::scheduler->get_cpu_utilization() << "%" << std::endl;
 
         size_t active_memory = global_objects::memory_allocator->get_active_memory();
-        stream << "Memory Usage: " << active_memory / 1024 << "MiB / " << os_config::max_overall_mem / 1024 << "MiB" << std::endl;
+        stream << "Memory Usage: " << active_memory / 1024 << "KiB / " << os_config::max_overall_mem / 1024 << "KiB" << std::endl;
         stream << "Memory Util: " << 100 * active_memory / os_config::max_overall_mem << "%" << std::endl;
 
         stream << std::endl;
@@ -242,7 +242,7 @@ Y88b  d88P Y88b  d88P Y88b. .d88P 888        888        Y88b  d88P     888
         {
             if (!process.second->is_done_executing() && process.second->get_assigned_core_id() != -1)
             {
-                stream << process.second->get_memory_required() / 1024 << "MiB" << std::endl;
+                stream << process.second->get_memory_required() / 1024 << "KiB" << std::endl;
             }
         }
         stream << "--------------------------------------------" << std::endl;
