@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <unordered_map>
+#include <map>
 #include <string>
 
 #include "ConcurrentPtrQueue.h"
@@ -10,7 +10,7 @@
 class ProcessManager
 {
 public:
-	typedef std::unordered_map<std::string, std::shared_ptr<Process>>& ProcessMap;
+	typedef std::map<std::string, std::shared_ptr<Process>>& ProcessMap;
 	typedef std::shared_ptr<ConcurrentPtrQueue<Process>>& ProcessQueue;
 
 	ProcessManager(ProcessMap process_map, std::shared_mutex& process_map_lock, ProcessQueue process_queue, CPUClockSource& clock_source, long long int min_ins, long long int max_ins, long long int batch_process_freq,

@@ -1,6 +1,6 @@
 #pragma once
 #include <queue>
-#include <unordered_map>
+#include <map>
 #include "IMemoryAllocator.h"
 #include <mutex>
 #include "BackingStore.h"
@@ -21,7 +21,7 @@ public:
 private:
 	class page_table {
 	public:
-		std::unordered_map<size_t, size_t> table;
+		std::map<size_t, size_t> table;
 		bool is_running = true;
 		int age;
 	};
@@ -32,9 +32,9 @@ private:
 	BackingStore& backing_store;
 	std::recursive_mutex alloc_mutex;
 	std::queue<size_t> free_frame_list;
-	std::unordered_map<void*, page_table> proc_page_tbl_map; // map handle to its page table
-	std::unordered_map<std::string, void*> proc_handle_map;
-	std::unordered_map<void*, std::string> handle_proc_map;
+	std::map<void*, page_table> proc_page_tbl_map; // map handle to its page table
+	std::map<std::string, void*> proc_handle_map;
+	std::map<void*, std::string> handle_proc_map;
 	size_t next_handle = 1; // 0 is nullptr
 	
 };

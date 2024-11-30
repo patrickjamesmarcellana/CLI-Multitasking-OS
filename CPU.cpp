@@ -141,7 +141,7 @@ std::shared_ptr<Process> CPU::get_process_from_queue()
                 }
             }
 
-            std::cout << "process not in backing store, is probably in MM\n";
+            //std::cout << "process not in backing store, is probably in MM\n";
             // if process exists in the main memory already, that is, no more allocation needed
             return process_in_front;
         }
@@ -185,7 +185,6 @@ void CPU::handle_execution_of_process()
             active_process->set_time_executed(time_executed);
             //active_process->getCommandList()[active_process->getCurrLine()]->execute(this->id, time_executed);
             active_process->incCurrLine();
-            std::this_thread::sleep_for(50ms);
         }
         this->process_cpu_counter_active++;
     }

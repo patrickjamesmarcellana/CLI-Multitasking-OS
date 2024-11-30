@@ -1,5 +1,5 @@
 #pragma once
-#include <unordered_map>
+#include <map>
 #include <vector>
 #include <algorithm>
 #include <chrono>
@@ -53,7 +53,7 @@ private:
 	size_t maximum_size;
 	size_t allocated_size;
 	std::vector<int> memory;
-	std::unordered_map<size_t, bool> allocation_map;
+	std::map<size_t, bool> allocation_map;
 	Primary_Fit_Approach fit_approach;
 	int processes_in_memory;
 	BackingStore& backing_store;

@@ -33,7 +33,7 @@ void* PagingAllocator::allocate(size_t size, std::string process_name)
 		}
 
 		if (handle_to_evict != nullptr) {
-			backing_store.storeProcess(handle_proc_map[handle_to_evict], proc_page_tbl_map[handle_to_evict].table.size() * this->page_size);
+			backing_store.storeProcess(handle_proc_map[handle_to_evict], proc_page_tbl_map[handle_to_evict].table.size());
 			deallocate(handle_to_evict, 0 /* ignored */);
 		}
 		else {

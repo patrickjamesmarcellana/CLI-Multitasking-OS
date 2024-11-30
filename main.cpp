@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 #include <sstream>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 #include "BackingStore.h"
@@ -17,7 +17,7 @@
 
 namespace os_config
 {
-    std::unordered_map<std::string, CPU::Algorithm> algorithm_map = {
+    std::map<std::string, CPU::Algorithm> algorithm_map = {
         {"fcfs", CPU::FCFS},
         {"rr", CPU::RR}
     };
@@ -123,7 +123,7 @@ namespace os_config
 
 namespace global_objects
 {
-    std::unordered_map<std::string, std::shared_ptr<Process>> process_map;
+    std::map<std::string, std::shared_ptr<Process>> process_map;
     std::shared_mutex process_map_lock;
     std::shared_ptr<ConcurrentPtrQueue<Process>> process_queue = std::make_shared<ConcurrentPtrQueue<Process>>();
     CPUClockSource clock_source;
